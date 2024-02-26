@@ -14,8 +14,6 @@
 // // Form
 // // useEffect
 
-
-
 // function GetRecipes() {
 //   return (
 //     <div>GetRecipes</div>
@@ -23,18 +21,16 @@
 // }
 // export default GetRecipes;
 
-import React, { useState, useEffect } from 'react';
-
+import React, { useState, useEffect } from "react";
 
 function GetRecipes() {
   // State variables
   const [ingredients, setIngredients] = useState([]);
   const [selectedIngredients, setSelectedIngredients] = useState([]);
-  const [generatedRecipe, setGeneratedRecipe] = useState(null);
+  const [generatedRecipes, setGeneratedRecipes] = useState([]);
 
   // Effect hook to fetch ingredients data from the backend when component mounts
-  useEffect(() => { 
-
+  useEffect(() => {
     fetchIngredients();
   }, []);
 
@@ -43,42 +39,45 @@ function GetRecipes() {
       method: "GET",
     };
     try {
-      const response = await fetch('/api/ingredients', options);
+      const response = await fetch("/api/ingredients", options);
       const data = await response.json();
-      console.log(response)
+      console.log(response);
       setIngredients(data.data);
-      console.log(data.data)
+      console.log(data.data);
     } catch (error) {
-      console.error('Error fetching ingredients:', error);
+      console.error("Error fetching ingredients:", error);
     }
   };
 
   // Function to handle selection of ingredients
   const handleIngredientSelect = (e) => {
-    console.log(e.target.value)
-    setSelectedIngredients(e.target.value);
+    const selectedValues = Array.from(
+      e.target.selectedOptions,
+      (option) => option.value
+    );
+    setSelectedIngredients(selectedValues);
   };
 
   // Function to submit selected ingredients and generate recipe
   const handleSubmit = async () => {
     try {
-      const response = await fetch('/api/generate-recipe', {
-        method: 'POST',
+      const response = await fetch("/api/generate-recipe", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          ingredients: selectedIngredients
-        })
+          ingredients: selectedIngredients,
+        }),
       });
       if (response.ok) {
         const data = await response.json();
-        setGeneratedRecipe(data); // Update state with generated recipe
+        setGeneratedRecipes(data.recipes.data); // Update state with generated recipe
       } else {
-        console.error('Error generating recipe');
+        console.error("Error generating recipe");
       }
     } catch (error) {
-      console.error('Error generating recipe:', error);
+      console.error("Error generating recipe:", error);
     }
   };
 
@@ -89,9 +88,17 @@ function GetRecipes() {
       {/* Form for selecting ingredients */}
       <div className="mb-3">
         <label className="form-label">Select Ingredients:</label>
-        <select multiple className="form-control" value={selectedIngredients} onChange={handleIngredientSelect}>
-          {ingredients.map(ingredient => (
-              <option key={ingredient.IngredientID} value={ingredient.IngredientID}>
+        <select
+          multiple
+          className="form-control"
+          value={selectedIngredients}
+          onChange={handleIngredientSelect}
+        >
+          {ingredients.map((ingredient) => (
+            <option
+              key={ingredient.IngredientID}
+              value={ingredient.IngredientID}
+            >
               {ingredient.Name}
             </option>
           ))}
@@ -99,21 +106,22 @@ function GetRecipes() {
       </div>
 
       {/* Button to submit selected ingredients */}
-      <button className="btn btn-outline-info" onClick={handleSubmit}>Generate Recipe</button>
+      <button className="btn btn-outline-info" onClick={handleSubmit}>
+        Generate Recipe
+      </button>
 
       {/* Section to display generated recipe */}
-      {generatedRecipe && (
+      {
         <div className="mt-3">
-          <h3>Generated Recipe</h3>
-          <p>{generatedRecipe}</p>
+          <h3>Generated Recipes</h3>
+          <p>{generatedRecipes.map((r) => r.Name)}</p>
         </div>
-      )}
+      }
     </div>
   );
 }
 
 export default GetRecipes;
-
 
 // import React, { useState, useEffect } from 'react';
 

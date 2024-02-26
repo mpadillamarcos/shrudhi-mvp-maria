@@ -1,4 +1,4 @@
-var express = require('express');
+var express = require("express");
 var router = express.Router();
 const db = require("../model/helper");
 
@@ -16,7 +16,6 @@ const db = require("../model/helper");
       - 2. GET /recipes/:id: Get a specific recipe
 */
 
-
 /*Routes 
 
 1. GET /recipes: Get all recipes
@@ -28,55 +27,55 @@ const db = require("../model/helper");
 
 /* 1. GET /recipes: Get all recipes*/
 
-  router.get('/recipes', async (req, res) => {
-    try {
-      //Search the database to retrieve all the recipes
-      const recipes = await db('SELECT * FROM recipes');
-      //Send the retrieved recipes as a JSON response
-      res.json(recipes);      
-    } catch (error){
-      //Handle database error
-      console.error('Error retrieving recipes:', error);
-      res.status(500).json({ message : 'Internal Server Error' });
-    }
-  });
+router.get("/recipes", async (req, res) => {
+  try {
+    //Search the database to retrieve all the recipes
+    const recipes = await db("SELECT * FROM recipes");
+    //Send the retrieved recipes as a JSON response
+    res.json(recipes);
+  } catch (error) {
+    //Handle database error
+    console.error("Error retrieving recipes:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
 
 /* 2. GET /recipes/:id: Get a specific recipe*/
 
-  router.get('/recipes/:id', async (req, res) => {
-    try {
-        // Extract the ID params from request URL
-        const recipeId = req.params.id;
-      
-        // Query the database to retrieve the specific recipe by its ID
-        const query = `SELECT * FROM Recipes WHERE RecipeID = ${recipeId}`;
-        const recipes = await db(query);
-      
-        // Check if the recipe exists
-        if (recipes.length === 0) {
-          // If not found, return a 404 Not Found response
-          res.status(404).json({ message: 'Recipe not found' });
-      } else {
-          // If found, send the recipe as a JSON response
-          res.json(recipes.data);
-      }
-      } catch (error) {
-        // Handle database errors
-        console.error('Error retrieving recipe:', error);
-        res.status(500).json({ message: 'Internal Server Error' });
+router.get("/recipes/:id", async (req, res) => {
+  try {
+    // Extract the ID params from request URL
+    const recipeId = req.params.id;
+
+    // Query the database to retrieve the specific recipe by its ID
+    const query = `SELECT * FROM Recipes WHERE RecipeID = ${recipeId}`;
+    const recipes = await db(query);
+
+    // Check if the recipe exists
+    if (recipes.length === 0) {
+      // If not found, return a 404 Not Found response
+      res.status(404).json({ message: "Recipe not found" });
+    } else {
+      // If found, send the recipe as a JSON response
+      res.json(recipes.data);
     }
+  } catch (error) {
+    // Handle database errors
+    console.error("Error retrieving recipe:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 });
-
-
 
 /* 3 POST /recipes: Add a new recipe & update recipeingredients table */
 router.post("/recipes", async (req, res) => {
   try {
     const { name, instructions, ingredients } = req.body;
-    
+
     // Insert the recipe into the recipes table
     // await db(`INSERT INTO recipes (Name , Instructions) VALUES ("${name}" , "${instructions}");`);
-    let results = await db(`INSERT INTO recipes (Name, Instructions) VALUES ("${name}", "${instructions}");SELECT LAST_INSERT_ID();`);
+    let results = await db(
+      `INSERT INTO recipes (Name, Instructions) VALUES ("${name}", "${instructions}");SELECT LAST_INSERT_ID();`
+    );
     // Get the ID of the last inserted recipe
     // const [rows] = await db(`SELECT LAST_INSERT_ID() as RecipeID;`);
     // const recipeId = rows[0].RecipeID;
@@ -89,15 +88,19 @@ router.post("/recipes", async (req, res) => {
     // Construct the values for all ingredients to be inserted
     for (const ingredient of ingredients) {
       const { ingredientId, quantity, unit } = ingredient;
-      await db(`INSERT INTO recipeingredients (RecipeID, IngredientID, Quantity, Unit) VALUES (${recipeId}, ${ingredientId}, ${quantity}, "${unit}");`);
+      await db(
+        `INSERT INTO recipeingredients (RecipeID, IngredientID, Quantity, Unit) VALUES (${recipeId}, ${ingredientId}, ${quantity}, "${unit}");`
+      );
     }
 
     // for (const id of ingredientId) {
     //   // Insert all ingredients into the recipe_ingredients table in a single query
     //   await db(`INSERT INTO recipeingredients (RecipeID, IngredientID, Quantity, Unit) VALUES (${last_id}, ${id}, ${quantity}, "${unit}");`);
     // }
-    
-    res.status(201).json({ message: "Recipe and ingredients inserted successfully" });
+
+    res
+      .status(201)
+      .json({ message: "Recipe and ingredients inserted successfully" });
   } catch (error) {
     console.error("Error inserting recipe and ingredients:", error);
     res.status(500).json(error);
@@ -105,24 +108,23 @@ router.post("/recipes", async (req, res) => {
 });
 
 /* 4. GET /ingredients */
-  router.get('/ingredients', async (req, res) => {
-    try {
-      // Query the database to fetch all available ingredients
-      const ingredients = await db('SELECT * FROM ingredients');
-      res.json(ingredients);
-    } catch (error) {
-      console.error('Error retrieving ingredients:', error);
-      res.status(500).json({ error: 'Error retrieving ingredients' });
-    }
+router.get("/ingredients", async (req, res) => {
+  try {
+    // Query the database to fetch all available ingredients
+    const ingredients = await db("SELECT * FROM ingredients");
+    res.json(ingredients);
+  } catch (error) {
+    console.error("Error retrieving ingredients:", error);
+    res.status(500).json({ error: "Error retrieving ingredients" });
+  }
 });
 
 /* 5. Generate recipe */
-router.post('/generate-recipe', async (req, res) => {
+router.post("/generate-recipe", async (req, res) => {
   const ingredients = req.body.ingredients; // An array of ingredient names
 
   // SQL query to fetch recipes based on ingredients
-  const query = 
-  ` SELECT r.* 
+  const query = ` SELECT r.* 
     FROM recipes AS r
     INNER JOIN recipeingredients ri ON r.RecipeID = ri.RecipeID
     WHERE IngredientID IN (${ingredients.join(",")})
@@ -136,20 +138,20 @@ router.post('/generate-recipe', async (req, res) => {
     // Send the results as JSON
     res.json({ recipes: results });
   } catch (error) {
-    console.error('Error generating recipe:', error);
+    console.error("Error generating recipe:", error);
     res.status(500).json(error);
   }
 });
 
 /* Get Recipe Ingredients table */
 /* 6. GET /recipeingredients: Get all recipe ingredients */
-router.get('/recipeingredients', async (req, res) => {
+router.get("/recipeingredients", async (req, res) => {
   try {
     // Query the database to fetch all recipe ingredients
-    const ingredients = await db('SELECT * FROM recipeingredients');
+    const ingredients = await db("SELECT * FROM recipeingredients");
     res.json(ingredients);
   } catch (error) {
-    console.error('Error retrieving recipe ingredients');
+    console.error("Error retrieving recipe ingredients");
     res.status(500).json(error);
   }
 });
