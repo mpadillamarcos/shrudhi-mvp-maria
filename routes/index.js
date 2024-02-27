@@ -98,7 +98,9 @@ router.post("/recipes", async (req, res) => {
     //   await db(`INSERT INTO recipeingredients (RecipeID, IngredientID, Quantity, Unit) VALUES (${last_id}, ${id}, ${quantity}, "${unit}");`);
     // }
 
-    res.status(201).json({ message: "Recipe and ingredients inserted successfully" });
+    res
+      .status(201)
+      .json({ message: "Recipe and ingredients inserted successfully" });
   } catch (error) {
     console.error("Error inserting recipe and ingredients:", error);
     res.status(500).json(error);
@@ -122,13 +124,29 @@ router.post("/generate-recipe", async (req, res) => {
   const ingredients = req.body.ingredients; // An array of ingredient names
 
   // SQL query to fetch recipes based on ingredients
-  const query = ` SELECT r.* 
-  FROM recipes AS r
-  INNER JOIN recipeingredients ri ON r.RecipeID = ri.RecipeID
-  WHERE IngredientID IN (${ingredients.join(",")})
-  GROUP BY r.RecipeID
-  HAVING COUNT(*) <= (${ingredients.length})
+  //   const query = ` SELECT r.*
+  //   FROM recipes AS r
+  //   INNER JOIN recipeingredients ri ON r.RecipeID = ri.RecipeID
+  //   WHERE IngredientID IN (${ingredients.join(",")})
+  //   GROUP BY r.RecipeID
+  //   HAVING COUNT(*) <= (${ingredients.length})
+  // `;
+
+  // SQL query to fetch recipes based on ingredients
+  // the recipe needs to have some of the ingredients in our list, and none that are not in our list
+  // we have to check that the recipe has all the ingredients and doesn't need more ingredients that are not in our list
+
+  const query = `
+SELECT r.*
+FROM recipes AS r
+INNER JOIN recipeingredients ri ON r.RecipeID = ri.RecipeID
+WHERE IngredientID IN (${ingredients.join(",")})
+GROUP BY r.RecipeID
+HAVING COUNT(*) <= (${ingredients.length})
+AND COUNT(*) = (SELECT COUNT(*) FROM recipeingredients WHERE RecipeID = r.RecipeID)
 `;
+
+  console.log("query", query);
   try {
     // Execute the SQL query
     const results = await db(query);
@@ -139,16 +157,6 @@ router.post("/generate-recipe", async (req, res) => {
     res.status(500).json(error);
   }
 });
-/*
-
-  FROM recipes AS r
-  INNER JOIN recipeingredients ri ON r.RecipeID = ri.RecipeID
-  WHERE IngredientID IN (${ingredients.map(ingredient => `(SELECT IngredientID FROM ingredients WHERE Name = '${ingredient}')`).join(",")})
-  GROUP BY r.RecipeID
-  HAVING COUNT(*) <= ${ingredients.length}
-`;
-
-*/
 
 /* Get Recipe Ingredients table */
 /* 6. GET /recipeingredients: Get all recipe ingredients */
