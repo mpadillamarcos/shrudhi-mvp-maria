@@ -24,18 +24,29 @@ Three buttons:
 
 function App() {
   return (
-    <>
-      <h1>Recipe App</h1>
+    <div className="App">
+      <div className="card bg-dark border-info" style={{ backgroundColor: '#FFA07A', borderWidth: '3px', borderStyle: 'solid' , borderRadius: '10px' }}>
+        <div className="card-body">
+          <div className="text-center mb-4 mt-2"> {/* Wrap the heading in its own container */}
+            <h1 className="text-info">Recipe App</h1> {/* Keep the heading without margin classes */}
+          </div>
+          <ul className="d-flex justify-content-center">
+            <button className="btn btn-outline-info mx-2 " >
+              <Link to="/" className="text-info">Home</Link>
+            </button>
+            <button className="btn btn-outline-info mx-2" >
+              <Link to="/all-recipes" className="text-info">All Recipes</Link>
+            </button>
+            <button className="btn btn-outline-info mx-2" >
+              <Link to="/get-recipes" className="text-info">Get Recipes</Link>
+            </button>
+            <button className="btn btn-outline-info mx-2" >
+              <Link to="/add-recipes" className="text-info">Add Recipes</Link>
+            </button>
+          </ul>
+        </div>
+      </div>
 
-      <ul>
-        <Link to="/">Home</Link>
-
-        <Link to="/all-recipes">All Recipes</Link>
-
-        <Link to="/get-recipes">Get Recipes</Link>
-
-        <Link to="/add-recipes">Add Recipes</Link>
-      </ul>
 
       <Routes>
         <Route path="/" element={<Home />} />
@@ -45,7 +56,7 @@ function App() {
         {/* <Route path="/recipes/:id" element={OneRecipe />} /> */}
         <Route path="*" element={<Page404 />} />
       </Routes>
-    </>
+    </div>
   );
 }
 

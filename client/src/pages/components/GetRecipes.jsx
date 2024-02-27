@@ -82,12 +82,12 @@ function GetRecipes() {
   };
 
   return (
-    <div className="container mt-5 text-bg-dark p-3">
-      <h2 className="mb-3">Get Recipes</h2>
+    <div className="container mt-5 text-bg-dark p-3 border border-info border-3">
+      <h2 className="text-info mb-3">Get Recipes</h2>
 
       {/* Form for selecting ingredients */}
       <div className="mb-3">
-        <label className="form-label">Select Ingredients:</label>
+        <label className="form-label text-info">Select Ingredients:</label>
         <select
           multiple
           className="form-control"
@@ -111,99 +111,23 @@ function GetRecipes() {
       </button>
 
       {/* Section to display generated recipe */}
-      {
+      {generatedRecipes.length !==0 &&(
         <div className="mt-3">
           <h3>Generated Recipes</h3>
-          <p>{generatedRecipes.map((r) => r.Name)}</p>
+          {generatedRecipes.map((recipe) => (
+            <div key={recipe.RecipeID}>
+              <p>
+                <strong>Name:</strong> {recipe.Name}
+              </p>
+              <p>
+                <strong>Instructions:</strong> {recipe.Instructions}
+              </p>
+            </div>
+          ))}
         </div>
-      }
+      )}
     </div>
   );
 }
-
 export default GetRecipes;
 
-// import React, { useState, useEffect } from 'react';
-
-// function GetRecipes() {
-//   const [ingredients, setIngredients] = useState([]);
-//   const [selectedIngredients, setSelectedIngredients] = useState([]);
-//   const [generatedRecipe, setGeneratedRecipe] = useState(null);
-
-//   useEffect(() => {
-//     const fetchIngredients = async () => {
-//       try {
-//         const response = await fetch('/ingredients');
-//         const data = await response.json();
-//         setIngredients(data);
-//       } catch (error) {
-//         console.error('Error fetching ingredients:', error);
-//       }
-//     };
-
-//     fetchIngredients();
-//   }, []);
-
-//   const handleIngredientSelect = (ingredientId) => {
-//     if (selectedIngredients.includes(ingredientId)) {
-//       setSelectedIngredients(selectedIngredients.filter((id) => id !== ingredientId));
-//     } else {
-//       setSelectedIngredients([...selectedIngredients, ingredientId]);
-//     }
-//   };
-
-//   const handleGenerateRecipe = async () => {
-//     try {
-//       const response = await fetch('/api/generate-recipe', {
-//         method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify({ ingredients: selectedIngredients }),
-//       });
-//       const data = await response.json();
-//       setGeneratedRecipe(data);
-//     } catch (error) {
-//       console.error('Error generating recipe:', error);
-//     }
-//   };
-
-//   return (
-//     <div>
-//       <h1>Get Recipes</h1>
-
-//       <h2>Select Ingredients</h2>
-//       <ul>
-//         {ingredients.map((ingredient) => (
-//           <li key={ingredient.IngredientID}>
-//             <button
-//               type="button"
-//               onClick={() => handleIngredientSelect(ingredient.IngredientID)}
-//               className={selectedIngredients.includes(ingredient.IngredientID) ? 'active' : ''}
-//             >
-//               {ingredient.Name}
-//             </button>
-//           </li>
-//         ))}
-//       </ul>
-
-//       <button type="button" onClick={handleGenerateRecipe}>
-//         Generate Recipe
-//       </button>
-
-//       {generatedRecipe && (
-//         <div>
-//           <h2>Generated Recipe</h2>
-//           <h3>{generatedRecipe.Name}</h3>
-//           <p>{generatedRecipe.Instructions}</p>
-//         </div>
-//       )}
-
-//       <button type="button" onClick={() => window.history.back()}>
-//         Back to Home
-//       </button>
-//     </div>
-//   );
-// }
-
-// export default GetRecipes;

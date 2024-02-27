@@ -98,9 +98,7 @@ router.post("/recipes", async (req, res) => {
     //   await db(`INSERT INTO recipeingredients (RecipeID, IngredientID, Quantity, Unit) VALUES (${last_id}, ${id}, ${quantity}, "${unit}");`);
     // }
 
-    res
-      .status(201)
-      .json({ message: "Recipe and ingredients inserted successfully" });
+    res.status(201).json({ message: "Recipe and ingredients inserted successfully" });
   } catch (error) {
     console.error("Error inserting recipe and ingredients:", error);
     res.status(500).json(error);
@@ -125,13 +123,12 @@ router.post("/generate-recipe", async (req, res) => {
 
   // SQL query to fetch recipes based on ingredients
   const query = ` SELECT r.* 
-    FROM recipes AS r
-    INNER JOIN recipeingredients ri ON r.RecipeID = ri.RecipeID
-    WHERE IngredientID IN (${ingredients.join(",")})
-    GROUP BY r.RecipeID
-    HAVING COUNT(*) <= (${ingredients.length})
-  `;
-
+  FROM recipes AS r
+  INNER JOIN recipeingredients ri ON r.RecipeID = ri.RecipeID
+  WHERE IngredientID IN (${ingredients.join(",")})
+  GROUP BY r.RecipeID
+  HAVING COUNT(*) <= (${ingredients.length})
+`;
   try {
     // Execute the SQL query
     const results = await db(query);
@@ -142,6 +139,16 @@ router.post("/generate-recipe", async (req, res) => {
     res.status(500).json(error);
   }
 });
+/*
+
+  FROM recipes AS r
+  INNER JOIN recipeingredients ri ON r.RecipeID = ri.RecipeID
+  WHERE IngredientID IN (${ingredients.map(ingredient => `(SELECT IngredientID FROM ingredients WHERE Name = '${ingredient}')`).join(",")})
+  GROUP BY r.RecipeID
+  HAVING COUNT(*) <= ${ingredients.length}
+`;
+
+*/
 
 /* Get Recipe Ingredients table */
 /* 6. GET /recipeingredients: Get all recipe ingredients */

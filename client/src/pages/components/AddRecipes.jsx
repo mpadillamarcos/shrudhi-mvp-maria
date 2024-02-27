@@ -119,22 +119,22 @@ function AddRecipes() {
   };
 
   return (
-    <div className="container mt-5 text-bg-dark p-3">
-      <h2>AddRecipes</h2>
+    <div className="container mt-5 text-bg-dark p-3 border border-info border-3">
+      <h2 className="text-info mb-3">AddRecipes</h2>
       <form onSubmit={handleSubmit}>
 
         <div className="mb-3">
-          <label className="form-label"> Recipe Name:</label>
+          <label className="form-label text-info"> Recipe Name:</label>
           <input type="text" className="form-control" value={recipeName} onChange={(e) => setRecipeName(e.target.value)} />
         </div>
 
         <div className="mb-3">
-          <label className="form-label"> Recipe Instructions:</label>
+          <label className="form-label text-info"> Recipe Instructions:</label>
           <textarea className="form-control" value={recipeInstructions} onChange={(e) => setRecipeInstructions(e.target.value)}></textarea>
         </div>
 
         <div className="mb-3">
-          <label className="form-label">Select Ingredients:</label>
+          <label className="form-label text-info">Select Ingredients:</label>
           <select multiple className="form-control" value={selectedIngredients} onChange={(e) => handleIngredient(0, e)}>
             {ingredients.map(ingredient => (
               <option key={ingredient.IngredientID} value={ingredient.IngredientID}>
@@ -147,11 +147,11 @@ function AddRecipes() {
         {selectedIngredients.map((selectedIngredientID, index) => (
           <div key={index}>
             <div className="mb-3">
-              <label className="form-label">Quantity:</label>
+              <label className="form-label text-info">Quantity:</label>
               <input type="text" className="form-control" value={ingredientQuantities[index] || ''} onChange={(e) => handleIngredientQuantity(index, e)} />
             </div>
             <div className="mb-3">
-              <label className="form-label">Unit:</label>
+              <label className="form-label text-info">Unit:</label>
               <input type="text" className="form-control" value={ingredientUnits[index] || ''} onChange={(e) => handleIngredientUnit(index, e)} />
             </div>
           </div>
