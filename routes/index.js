@@ -122,7 +122,26 @@ router.get("/ingredients", async (req, res) => {
 /* 5. Generate recipe */
 router.post("/generate-recipe", async (req, res) => {
   const ingredients = req.body.ingredients; // An array of ingredient names
-
+  const query = `
+  SELECT r.*
+  FROM recipes AS r
+  INNER JOIN recipeingredients ri ON r.RecipeID = ri.RecipeID
+  WHERE IngredientID IN (${ingredients.join(",")})
+  GROUP BY r.RecipeID
+  HAVING COUNT(*) <= (${ingredients.length})
+  AND COUNT(*) = (SELECT COUNT(*) FROM recipeingredients WHERE RecipeID = r.RecipeID)
+  `;
+  console.log("query", query);
+  try {
+    // Execute the SQL query
+    const results = await db(query);
+    // Send the results as JSON
+    res.json({ recipes: results });
+  } catch (error) {
+    console.error("Error generating recipe:", error);
+    res.status(500).json(error);
+  }
+});
   // SQL query to fetch recipes based on ingredients
   //   const query = ` SELECT r.*
   //   FROM recipes AS r
@@ -136,27 +155,6 @@ router.post("/generate-recipe", async (req, res) => {
   // the recipe needs to have some of the ingredients in our list, and none that are not in our list
   // we have to check that the recipe has all the ingredients and doesn't need more ingredients that are not in our list
 
-  const query = `
-SELECT r.*
-FROM recipes AS r
-INNER JOIN recipeingredients ri ON r.RecipeID = ri.RecipeID
-WHERE IngredientID IN (${ingredients.join(",")})
-GROUP BY r.RecipeID
-HAVING COUNT(*) <= (${ingredients.length})
-AND COUNT(*) = (SELECT COUNT(*) FROM recipeingredients WHERE RecipeID = r.RecipeID)
-`;
-
-  console.log("query", query);
-  try {
-    // Execute the SQL query
-    const results = await db(query);
-    // Send the results as JSON
-    res.json({ recipes: results });
-  } catch (error) {
-    console.error("Error generating recipe:", error);
-    res.status(500).json(error);
-  }
-});
 
 /* Get Recipe Ingredients table */
 /* 6. GET /recipeingredients: Get all recipe ingredients */

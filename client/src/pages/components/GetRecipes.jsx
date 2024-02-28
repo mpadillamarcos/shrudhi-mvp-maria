@@ -25,9 +25,9 @@ import React, { useState, useEffect } from "react";
 
 function GetRecipes() {
   // State variables
-  const [ingredients, setIngredients] = useState([]);
-  const [selectedIngredients, setSelectedIngredients] = useState([]);
-  const [generatedRecipes, setGeneratedRecipes] = useState([]);
+  const [ingredients, setIngredients] = useState([]); //Stores the list of available ingredients fetched from an API.
+  const [selectedIngredients, setSelectedIngredients] = useState([]); //Keeps track of the ingredients selected by the user.
+  const [generatedRecipes, setGeneratedRecipes] = useState([]); //Stores the list of recipes generated based on the selected ingredients.
 
   // Effect hook to fetch ingredients data from the backend when component mounts
   useEffect(() => {
@@ -50,6 +50,8 @@ function GetRecipes() {
   };
 
   // Function to handle selection of ingredients
+//  This function is called when the user selects ingredients from the dropdown.
+// It extracts the values of the selected options and updates the selectedIngredients state accordingly.
   const handleIngredientSelect = (e) => {
     const selectedValues = Array.from(
       e.target.selectedOptions,
@@ -59,6 +61,9 @@ function GetRecipes() {
   };
 
   // Function to submit selected ingredients and generate recipe
+//  This function is called when the user clicks the "Generate Recipe" button.
+// It sends a POST request to /api/generate-recipe with the selected ingredients in the request body.
+// Upon receiving a successful response, it updates the generatedRecipes state with the generated recipes.
   const handleSubmit = async () => {
     try {
       const response = await fetch("/api/generate-recipe", {
@@ -81,6 +86,12 @@ function GetRecipes() {
     }
   };
 
+// The component renders a form with a dropdown menu allowing users to select multiple ingredients.
+//It renders a button labeled "Generate Recipe" which triggers the handleSubmit function when clicked.
+//If there are generated recipes (generatedRecipes array is not empty), it renders them in a section titled "Generated Recipes".
+//The generated recipes are displayed with their names and instructions.
+//{generatedRecipes.length !== 0 && (...)}: This is a conditional rendering in JSX. It checks whether the length of the generatedRecipes array is not equal to 0. 
+// If this condition is true, the JSX code inside the parentheses ((...)) is rendered; otherwise, nothing is rendered.
   return (
     <div className="container mt-5 text-bg-dark p-3 border border-info border-3">
       <h2 className="text-info mb-3">Get Recipes</h2>
