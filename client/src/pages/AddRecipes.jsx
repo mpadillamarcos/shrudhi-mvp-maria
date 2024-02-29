@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 function AddRecipes() {
   const [recipeName, setRecipeName] = useState(""); //Stores the name of the recipe.
@@ -9,35 +9,40 @@ function AddRecipes() {
   const [ingredientUnits, setIngredientUnits] = useState([]); //Stores the units of measurement for the ingredients.
   const [newIngredientIndex, setNewIngredientIndex] = useState(0); //Tracks the index of a newly added ingredient (New Ingredient Button)
 
-
-// fetch the list of ingredients from an API when the component mounts. 
-// The fetched data is then stored in the ingredients state variable.
+  // fetch the list of ingredients from an API when the component mounts.
+  // The fetched data is then stored in the ingredients state variable.
   useEffect(() => {
-    fetchIngredients(); 
+    fetchIngredients();
   }, []);
 
   const fetchIngredients = async () => {
     try {
-      const response = await fetch('/api/ingredients');
+      const response = await fetch("/api/ingredients");
       const data = await response.json();
       setIngredients(data.data);
     } catch (error) {
-      console.error('Error fetching ingredients:', error);
+      console.error("Error fetching ingredients:", error);
     }
   };
 
-// This function is called when the user submits the form. 
-// It first validates whether all required fields (recipe name, instructions, selected ingredients, 
-// quantities, and units) are filled. If validation passes, it constructs a JSON object containing 
-// recipe details and sends a POST request to an API endpoint (/api/recipes) to add the recipe.
+  // This function is called when the user submits the form.
+  // It first validates whether all required fields (recipe name, instructions, selected ingredients,
+  // quantities, and units) are filled. If validation passes, it constructs a JSON object containing
+  // recipe details and sends a POST request to an API endpoint (/api/recipes) to add the recipe.
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!recipeName || !recipeInstructions || !selectedIngredients.length || !ingredientQuantities.length || !ingredientUnits.length) {
-      console.error('Please fill in all required fields');
+    if (
+      !recipeName ||
+      !recipeInstructions ||
+      !selectedIngredients.length ||
+      !ingredientQuantities.length ||
+      !ingredientUnits.length
+    ) {
+      console.error("Please fill in all required fields");
       return;
     }
     try {
-      const response = await fetch('/api/recipes', {
+      const response = await fetch("/api/recipes", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -48,31 +53,31 @@ function AddRecipes() {
           ingredients: selectedIngredients.map((ingredient, index) => ({
             ingredientId: ingredient,
             quantity: ingredientQuantities[index],
-            unit: ingredientUnits[index]
-          }))
-        })
+            unit: ingredientUnits[index],
+          })),
+        }),
       });
       if (response.ok) {
         console.log("Recipe and ingredients added successfully");
-        setRecipeName('');
-        setRecipeInstructions('');
+        setRecipeName("");
+        setRecipeInstructions("");
         setSelectedIngredients([]);
         setIngredientQuantities([]);
         setIngredientUnits([]);
         setNewIngredientIndex(0);
       } else {
-        console.error('Error inserting recipe and ingredients');
+        console.error("Error inserting recipe and ingredients");
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
   };
 
-// These functions handle changes to the selected ingredients, quantities, and units respectively. 
-// They update the corresponding state variables as the user interacts with the form inputs.
+  // These functions handle changes to the selected ingredients, quantities, and units respectively.
+  // They update the corresponding state variables as the user interacts with the form inputs.
   const handleIngredient = (index, e) => {
-    if (e.target.value === 'newIngredient') {
-      setNewIngredientIndex(prevState => prevState + 1);
+    if (e.target.value === "newIngredient") {
+      setNewIngredientIndex((prevState) => prevState + 1);
       return;
     }
     const newSelectedIngredients = [...selectedIngredients];
@@ -83,7 +88,7 @@ function AddRecipes() {
     }
     setSelectedIngredients(newSelectedIngredients);
     handleIngredientChange(index, e.target.value, setIngredientQuantities);
-    handleIngredientChange(index, '', setIngredientUnits);
+    handleIngredientChange(index, "", setIngredientUnits);
   };
 
   const handleIngredientQuantity = (index, e) => {
@@ -97,13 +102,13 @@ function AddRecipes() {
     newIngredientUnits[index] = e.target.value;
     setIngredientUnits(newIngredientUnits);
   };
-// This function adds a new set of ingredient input fields dynamically when 
-// the user clicks the "New Ingredient" button.
+  // This function adds a new set of ingredient input fields dynamically when
+  // the user clicks the "New Ingredient" button.
   const addNewIngredientInput = () => {
-    setSelectedIngredients([...selectedIngredients, '']);
-    setIngredientQuantities([...ingredientQuantities, '']);
-    setIngredientUnits([...ingredientUnits, '']);
-    setNewIngredientIndex(prevState => prevState + 1);
+    setSelectedIngredients([...selectedIngredients, ""]);
+    setIngredientQuantities([...ingredientQuantities, ""]);
+    setIngredientUnits([...ingredientUnits, ""]);
+    setNewIngredientIndex((prevState) => prevState + 1);
   };
 
   return (
@@ -112,21 +117,39 @@ function AddRecipes() {
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
           <label className="form-label text-info">Recipe Name:</label>
-          <input type="text" className="form-control" value={recipeName} onChange={(e) => setRecipeName(e.target.value)} />
+          <input
+            type="text"
+            className="form-control"
+            value={recipeName}
+            onChange={(e) => setRecipeName(e.target.value)}
+          />
         </div>
         <div className="mb-3">
           <label className="form-label text-info">Recipe Instructions:</label>
-          <textarea className="form-control" value={recipeInstructions} onChange={(e) => setRecipeInstructions(e.target.value)}></textarea>
+          <textarea
+            className="form-control"
+            value={recipeInstructions}
+            onChange={(e) => setRecipeInstructions(e.target.value)}
+          ></textarea>
         </div>
         <div className="mb-3">
           <label className="form-label text-info">Ingredients:</label>
           {selectedIngredients.map((selectedIngredient, index) => (
-            <div key={index} className={`row ${index !== 0 ? 'mt-3' : ''}`}>
+            <div key={index} className={`row ${index !== 0 ? "mt-3" : ""}`}>
               <div className="col-4">
-                <select className="form-control" value={selectedIngredient} onChange={(e) => handleIngredient(index, e)}>
-                  <option disabled value="">Select an ingredient</option>
-                  {ingredients.map(ingredient => (
-                    <option key={ingredient.IngredientID} value={ingredient.IngredientID}>
+                <select
+                  className="form-control"
+                  value={selectedIngredient}
+                  onChange={(e) => handleIngredient(index, e)}
+                >
+                  <option disabled value="">
+                    Select an ingredient
+                  </option>
+                  {ingredients.map((ingredient) => (
+                    <option
+                      key={ingredient.IngredientID}
+                      value={ingredient.IngredientID}
+                    >
                       {ingredient.Name}
                     </option>
                   ))}
@@ -134,17 +157,42 @@ function AddRecipes() {
                 </select>
               </div>
               <div className="col-2">
-                <input type="text" className="form-control" placeholder="Quantity" value={ingredientQuantities[index]} onChange={(e) => handleIngredientQuantity(index, e)} />
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Quantity"
+                  value={ingredientQuantities[index]}
+                  onChange={(e) => handleIngredientQuantity(index, e)}
+                />
               </div>
               <div className="col-2">
-                <input type="text" className="form-control" placeholder="Unit" value={ingredientUnits[index]} onChange={(e) => handleIngredientUnit(index, e)} />
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Unit"
+                  value={ingredientUnits[index]}
+                  onChange={(e) => handleIngredientUnit(index, e)}
+                />
               </div>
             </div>
           ))}
           <div className="d-flex justify-content-between align-items-center">
-            <button type="button" className="btn btn-outline-info" onClick={addNewIngredientInput} style={{ marginTop: '30px' }}>New Ingredient</button>
+            <button
+              type="button"
+              className="btn btn-outline-info"
+              onClick={addNewIngredientInput}
+              style={{ marginTop: "30px" }}
+            >
+              New Ingredient
+            </button>
             <div style={{ flexGrow: 1 }}></div>
-            <button type="submit" className="btn btn-outline-info" style={{ marginTop: '30px' }}>Add Recipe</button>
+            <button
+              type="submit"
+              className="btn btn-outline-info"
+              style={{ marginTop: "30px" }}
+            >
+              Add Recipe
+            </button>
           </div>
         </div>
       </form>
@@ -161,15 +209,14 @@ export default AddRecipes;
 // Dropdown to select ingredients name with the id. (router.get('/ingredients')
 // Input field for ingredient quantity
 // Input field for ingredient units
-// Button to submit all which will update the post("/recipes") 
+// Button to submit all which will update the post("/recipes")
 
-
-// For the drop down: 
+// For the drop down:
 // Need a list of ingredients from the database to appear. (router.get('/ingredients')
-// I need the IngredientID to appear and name to appear. 
+// I need the IngredientID to appear and name to appear.
 
-// Need a form to submit. 
-// The handlesubmit function should update the recipes table and the recipeingredients table. 
+// Need a form to submit.
+// The handlesubmit function should update the recipes table and the recipeingredients table.
 // The update to the recipes table would be name and instructions. (post("/recipes") )
 // The update to the recipesingredients table would be the newly created recipes id, ingredient id, quantity and unit.(post("/recipes") )
 
@@ -186,7 +233,6 @@ export default AddRecipes;
 //   const [ingredientUnit, setIngredientUnit] = useState([]); //Input field for ingredient units
 //   // const [ingredientUnit, setIngredientUnit] = useState(''); //Input field for ingredient units
 
-
 //   // Use the Effect hook to fetch ingredients list when component mounts
 //   useEffect(() => {
 //     // Fetch ingredients data from the backend
@@ -195,8 +241,6 @@ export default AddRecipes;
 //       .then(data => setIngredients(data))//Setting ingredients state with fetched data
 //       .catch(error => console.error('Error fetching ingredients'));// Handling errors
 //   }, []); // Empty array to ensure it runs only once when the component mounts
-
-
 
 //   // Function to handle form submission
 //     const handleSubmit = async (e) => {
@@ -215,12 +259,12 @@ export default AddRecipes;
 //         "Content-Type": "application/json",
 //       },
 //       body: JSON.stringify(//follow postman body
-//         { name: recipeName, 
-//           instructions: recipeInstructions, 
-//           ingredients: 
+//         { name: recipeName,
+//           instructions: recipeInstructions,
+//           ingredients:
 //           [{
-//             ingredientId: selectedIngredients, 
-//             quantity: ingredientQuantity, 
+//             ingredientId: selectedIngredients,
+//             quantity: ingredientQuantity,
 //             unit: ingredientUnit
 //           }
 //         ]
@@ -246,7 +290,7 @@ export default AddRecipes;
 //   };
 
 //   // Function for multiple ingredient selection
-//   // Use the setter method to return a new array. don't 
+//   // Use the setter method to return a new array. don't
 //   const handleIngredient = (e) => {
 //     setSelectedIngredients(
 //       [...e.target.selectedOptions].map(option => option.value))
@@ -258,7 +302,6 @@ export default AddRecipes;
 //     setIngredientQuantity(e.target.value);
 //     setIngredientUnit(e.target.value);
 //    };
-  
 
 //   return (
 //     <div className="container mt-5" class="text-bg-dark p-3">
@@ -267,15 +310,14 @@ export default AddRecipes;
 
 //     <div class="mb-3">
 //       <label className="form-label"> Recipe Name:</label>
-//         <input type="text" className="form-control" value={recipeName} onChange={(e) => handleInputChange(e)}/>      
-//       </div>            
-
+//         <input type="text" className="form-control" value={recipeName} onChange={(e) => handleInputChange(e)}/>
+//       </div>
 
 //     <div class="mb-3">
 //       <label className="form-label"> Recipe Instructions:</label>
 //         <textarea className="form-control" value={recipeInstructions} onChange={(e) => handleInputChange(e)}/>
 //        </div>
-                  
+
 //     <div className="mb-3">
 //        <label className="form-label"> Select Ingredients: </label>
 //         <select multiple className="form-control" value={selectedIngredients} onChange={handleIngredient} isMulti>
@@ -283,16 +325,16 @@ export default AddRecipes;
 //           <option key={ingredient.IngredientID} value= {ingredient.IngredientID}>
 //             {ingredient.Name}</option>
 //           ))}
-//         </select>    
-//     </div> 
-      
-//     <div className="mb-3">
-//        <label className="form-label">Quantity:</label>       
-//         <input type="text" className="form-control" value={ingredientQuantity} onChange={(e) => handleInputChange(e)}/>
-//     </div>  
+//         </select>
+//     </div>
 
-//     <div className="mb-3">        
-//       <label className="form-label">Unit:</label>       
+//     <div className="mb-3">
+//        <label className="form-label">Quantity:</label>
+//         <input type="text" className="form-control" value={ingredientQuantity} onChange={(e) => handleInputChange(e)}/>
+//     </div>
+
+//     <div className="mb-3">
+//       <label className="form-label">Unit:</label>
 //         <input type="text" className="form-control" value={ingredientUnit} onChange={(e) => handleInputChange(e)}/>
 //     </div>
 
