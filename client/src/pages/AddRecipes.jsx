@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from "react";
 import AddIngredients from "../components/AddIngredients";
-import { Typeahead } from "react-bootstrap-typeahead";
+import Form from "react-bootstrap/Form";
+import InputGroup from "react-bootstrap/InputGroup";
+import Button from "react-bootstrap/Button";
 
 function AddRecipes() {
   const [recipeName, setRecipeName] = useState(""); //Stores the name of the recipe.
   const [recipeInstructions, setRecipeInstructions] = useState(""); //Stores the instructions for preparing the recipe.
   const [ingredients, setIngredients] = useState([]); //Holds an array of available ingredients fetched from the database.
-  // const [selectedIngredients, setSelectedIngredients] = useState([]); //Keeps track of the ingredients selected by the user.
-  // const [ingredientQuantities, setIngredientQuantities] = useState([]); //Stores the quantities corresponding to each selected ingredient.
-  // const [ingredientUnits, setIngredientUnits] = useState([]); //Stores the units of measurement for the ingredients.
-  // const [newIngredientIndex, setNewIngredientIndex] = useState(0); //Tracks the index of a newly added ingredient (New Ingredient Button)
-  const [inputFields, setInputFields] = useState([
+  const [ingredientFields, setIngredientFields] = useState([
     { name: null, quantity: "", units: "" },
   ]);
+  const [validated, setValidated] = useState(false);
 
   // fetch the list of ingredients from an API when the component mounts.
   // The fetched data is then stored in the ingredients state variable.
@@ -34,18 +33,27 @@ function AddRecipes() {
   // It first validates whether all required fields (recipe name, instructions, selected ingredients,
   // quantities, and units) are filled. If validation passes, it constructs a JSON object containing
   // recipe details and sends a POST request to an API endpoint (/api/recipes) to add the recipe.
+
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (
-      !recipeName ||
-      !recipeInstructions
-      // || !selectedIngredients.length ||
-      // !ingredientQuantities.length ||
-      // !ingredientUnits.length
-    ) {
-      console.error("Please fill in all required fields");
-      return;
+    const form = e.currentTarget;
+    if (form.checkValidity() === false) {
+      e.preventDefault();
+      e.stopPropagation();
     }
+
+    setValidated(true);
+    // e.preventDefault();
+    // if (
+    //   !recipeName ||
+    //   !recipeInstructions ||
+    //   ingredientFields.filter((field) => field.name === null).length > 0
+    //   // || !selectedIngredients.length ||
+    //   // !ingredientQuantities.length ||
+    //   // !ingredientUnits.length
+    // ) {
+    //   console.error("Please fill in all required fields");
+    //   return;
+    // }
     try {
       const response = await fetch("/api/recipes", {
         method: "POST",
@@ -55,7 +63,7 @@ function AddRecipes() {
         body: JSON.stringify({
           title: recipeName,
           instructions: recipeInstructions,
-          ingredients: inputFields.map((ingredient, index) => ({
+          ingredients: ingredientFields.map((ingredient, index) => ({
             name: ingredient.name[0].name,
             quantity: ingredient.quantity[index],
             unit: ingredientUnits[index],
@@ -78,344 +86,46 @@ function AddRecipes() {
     }
   };
 
-  // These functions handle changes to the selected ingredients, quantities, and units respectively.
-  // They update the corresponding state variables as the user interacts with the form inputs.
-  const handleIngredient = (index, e) => {
-    //Shrudhi:
-    // if (e.target.value === "newIngredient") {
-    //   setNewIngredientIndex((prevState) => prevState + 1);
-    //   return;
-    // }
-
-    if (
-      ingredients.filter((ingredient) => ingredient === e.target.value)
-        .length === 0
-    ) {
-      setNewIngredientIndex((prevState) => prevState + 1);
-      setIngredients([...ingredients, e.target.value]);
-      setSelectedIngredients([...selectedIngredients, e.target.value[index]]);
-    }
-
-    const newSelectedIngredients = [...selectedIngredients];
-    if (index === newIngredientIndex) {
-      newSelectedIngredients[newIngredientIndex] = e.target.value;
-    } else {
-      newSelectedIngredients[index] = e.target.value;
-    }
-    setSelectedIngredients(newSelectedIngredients);
-    handleIngredientChange(index, e.target.value, setIngredientQuantities);
-    handleIngredientChange(index, "", setIngredientUnits);
-  };
-
-  const handleIngredientQuantity = (index, e) => {
-    const newIngredientQuantities = [...ingredientQuantities];
-    newIngredientQuantities[index] = e.target.value;
-    setIngredientQuantities(newIngredientQuantities);
-  };
-
-  const handleIngredientUnit = (index, e) => {
-    const newIngredientUnits = [...ingredientUnits];
-    newIngredientUnits[index] = e.target.value;
-    setIngredientUnits(newIngredientUnits);
-  };
-  // This function adds a new set of ingredient input fields dynamically when
-  // the user clicks the "New Ingredient" button.
-  // const addNewIngredientInput = () => {
-  //   setSelectedIngredients([...selectedIngredients, ""]);
-  //   setIngredientQuantities([...ingredientQuantities, ""]);
-  //   setIngredientUnits([...ingredientUnits, ""]);
-  //   setNewIngredientIndex((prevState) => prevState + 1);
-  // };
-
   return (
     <div className="container mt-5 text-bg-dark p-3 border border-info border-3">
       <h2 className="text-info mb-3">Add Recipes</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label className="form-label text-info">Recipe Name:</label>
-          <input
+      <Form noValidate validated={validated} onSubmit={handleSubmit}>
+        <InputGroup hasValidation className="mb-3">
+          <Form.Control
             type="text"
-            className="form-control"
+            placeholder="Recipe name"
+            required
             value={recipeName}
             onChange={(e) => setRecipeName(e.target.value)}
           />
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label text-info">Recipe Instructions:</label>
-          <textarea
-            className="form-control"
+          <Form.Control.Feedback type="invalid">
+            Please enter a title for your recipe.
+          </Form.Control.Feedback>
+        </InputGroup>
+        <InputGroup hasValidation className="mb-3">
+          <Form.Control
+            as="textarea"
+            type="text"
+            placeholder="Instructions"
+            required
             value={recipeInstructions}
             onChange={(e) => setRecipeInstructions(e.target.value)}
-          ></textarea>
-        </div>
-
-        {/* <div className="row">
-          <div className="col-6">
-            <label>Ingredients:</label>
-            <Typeahead
-              allowNew
-              id="ingredient"
-              labelKey="ingredient"
-              onChange={setIngredients}
-              options={ingredients}
-              placeholder="Write one ingredient"
-              selected={ingredients}
-            />
-          </div>
-          <div className="col-3">
-            <label>Quantities:</label>
-            <Typeahead
-              allowNew
-              id="quantity"
-              labelKey="quantity"
-              onChange={setIngredientQuantities}
-              options={ingredientQuantities}
-              placeholder="Add a number"
-              selected={ingredientQuantities}
-            />
-          </div>
-          <div className="col-3">
-            <label>Units:</label>
-            <Typeahead
-              allowNew
-              id="units"
-              labelKey="units"
-              onChange={setIngredientUnits}
-              options={ingredientUnits}
-              placeholder="Units"
-              selected={ingredientUnits}
-            />
-          </div>
-        </div>  */}
-
-        <div className="mb-3">
-          <label className="form-label text-info">Ingredients:</label>
-          <AddIngredients
-            ingredients={ingredients}
-            inputFields={inputFields}
-            setInputFields={setInputFields}
           />
-          {/* {selectedIngredients.map((selectedIngredient, index) => (
-            <div key={index} className={`row ${index !== 0 ? "mt-3" : ""}`}>
-              <div className="col-6">
-                <Typeahead
-                  allowNew
-                  id="ingredient"
-                  labelKey="ingredient"
-                  onChange={(e) => handleIngredient(index, e)}
-                  value={selectedIngredient[index]}
-                  options={ingredients}
-                  placeholder="Write one ingredient"
-                  selected={selectedIngredient[index]}
-                />
-                <select
-                  className="form-control"
-                  value={selectedIngredient}
-                  onChange={(e) => handleIngredient(index, e)}
-                >
-                  <option disabled value="">
-                    Select an ingredient
-                  </option>
-                  {ingredients.map((ingredient) => (
-                    <option
-                      key={ingredient.IngredientID}
-                      value={ingredient.IngredientID}
-                    >
-                      {ingredient.Name}
-                    </option>
-                  ))}
-                  <option value="newIngredient">New Ingredient</option>
-                </select>
-              </div>
-              <div className="col-3">
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Quantity"
-                  value={ingredientQuantities[index]}
-                  onChange={(e) => handleIngredientQuantity(index, e)}
-                />
-              </div>
-              <div className="col-3">
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Unit"
-                  value={ingredientUnits[index]}
-                  onChange={(e) => handleIngredientUnit(index, e)}
-                />
-              </div>
-            </div>
-          ))} */}
-          {/* <div>
-            <button
-              type="button"
-              className="btn btn-outline-info"
-              onClick={addNewIngredientInput}
-              style={{ marginTop: "30px" }}
-            >
-              New Ingredient
-            </button>
-            <div style={{ flexGrow: 1 }}></div>
-          </div> */}
-        </div>
-
-        <button
-          type="submit"
-          className="btn btn-outline-info"
-          // style={{ marginTop: "30px" }}
-        >
+          <Form.Control.Feedback type="invalid">
+            Please enter the recipe instructions.
+          </Form.Control.Feedback>
+        </InputGroup>
+        <AddIngredients
+          ingredients={ingredients}
+          inputFields={ingredientFields}
+          setInputFields={setIngredientFields}
+        />
+        <Button className="mt-3" type="submit">
           Add Recipe
-        </button>
-      </form>
+        </Button>
+      </Form>
     </div>
   );
 }
 
 export default AddRecipes;
-
-// import React, { useState, useEffect } from 'react';
-// /*
-// Add Recipes Page:
-// Input field for recipe name
-// Input field for recipe instructions
-// Dropdown to select ingredients name with the id. (router.get('/ingredients')
-// Input field for ingredient quantity
-// Input field for ingredient units
-// Button to submit all which will update the post("/recipes")
-
-// For the drop down:
-// Need a list of ingredients from the database to appear. (router.get('/ingredients')
-// I need the IngredientID to appear and name to appear.
-
-// Need a form to submit.
-// The handlesubmit function should update the recipes table and the recipeingredients table.
-// The update to the recipes table would be name and instructions. (post("/recipes") )
-// The update to the recipesingredients table would be the newly created recipes id, ingredient id, quantity and unit.(post("/recipes") )
-
-// */
-
-//  function AddRecipes() {
-//   //State variables to manage the input field values (getter & setter)
-//   const[recipeName, setRecipeName] = useState(""); //Input field for recipe name
-//   const[recipeInstructions, setRecipeInstructions] = useState(""); //Input field for recipe instructions
-//   const [ingredients, setIngredients] = useState([]); //Holds the list of ingredients fetched from the backend
-//   const [selectedIngredients, setSelectedIngredients] = useState([]); //Dropdown to select ingredients name with the id.
-//   const [ingredientQuantity, setIngredientQuantity] = useState([]);//Input field for ingredient quantity
-//   // const [ingredientQuantity, setIngredientQuantity] = useState('');//Input field for ingredient quantity
-//   const [ingredientUnit, setIngredientUnit] = useState([]); //Input field for ingredient units
-//   // const [ingredientUnit, setIngredientUnit] = useState(''); //Input field for ingredient units
-
-//   // Use the Effect hook to fetch ingredients list when component mounts
-//   useEffect(() => {
-//     // Fetch ingredients data from the backend
-//     fetch('/ingredients')// Sending GET request to fetch ingredients
-//       .then(response => response.json())
-//       .then(data => setIngredients(data))//Setting ingredients state with fetched data
-//       .catch(error => console.error('Error fetching ingredients'));// Handling errors
-//   }, []); // Empty array to ensure it runs only once when the component mounts
-
-//   // Function to handle form submission
-//     const handleSubmit = async (e) => {
-//       e.preventDefault();
-//         // Check for empty fields
-//       if (!recipeName || !recipeInstructions || !selectedIngredients || !ingredientQuantity || !ingredientUnit) {
-//        // Display error message or take appropriate action
-//       console.error('Please fill in all required fields');
-//       return; // Prevent form submission
-//   }
-//     // Send POST request to add recipe endpoint
-//     try{
-//     const response = await fetch('/api/recipes', {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify(//follow postman body
-//         { name: recipeName,
-//           instructions: recipeInstructions,
-//           ingredients:
-//           [{
-//             ingredientId: selectedIngredients,
-//             quantity: ingredientQuantity,
-//             unit: ingredientUnit
-//           }
-//         ]
-//       })});
-//       if(response.ok){
-//         // Recipe and ingredients inserted successfully
-//         console.log("Recipe and ingredients added successfully");
-//         // Reset form fields
-//         setRecipeName('');
-//         setRecipeInstructions('');
-//         setSelectedIngredients([]);
-//         setIngredientQuantity([]);
-//         setIngredientUnit([]);
-//         // setIngredientQuantity('');
-//         // setIngredientUnit('');
-//       }else {
-//         // Error inserting recipe and ingredients
-//         console.error('Error inserting recipe and ingredients');
-//       }
-//     } catch (error) {
-//       console.error('Error:', error);
-//     }
-//   };
-
-//   // Function for multiple ingredient selection
-//   // Use the setter method to return a new array. don't
-//   const handleIngredient = (e) => {
-//     setSelectedIngredients(
-//       [...e.target.selectedOptions].map(option => option.value))
-//   };
-// //
-//   const handleInputChange = (e) => {
-//     setRecipeName(e.target.value);
-//     setRecipeInstructions(e.target.value);
-//     setIngredientQuantity(e.target.value);
-//     setIngredientUnit(e.target.value);
-//    };
-
-//   return (
-//     <div className="container mt-5" class="text-bg-dark p-3">
-//       <h2>AddRecipes</h2>
-//     <form onSubmit={handleSubmit}>
-
-//     <div class="mb-3">
-//       <label className="form-label"> Recipe Name:</label>
-//         <input type="text" className="form-control" value={recipeName} onChange={(e) => handleInputChange(e)}/>
-//       </div>
-
-//     <div class="mb-3">
-//       <label className="form-label"> Recipe Instructions:</label>
-//         <textarea className="form-control" value={recipeInstructions} onChange={(e) => handleInputChange(e)}/>
-//        </div>
-
-//     <div className="mb-3">
-//        <label className="form-label"> Select Ingredients: </label>
-//         <select multiple className="form-control" value={selectedIngredients} onChange={handleIngredient} isMulti>
-//         {ingredients.map(ingredient =>(
-//           <option key={ingredient.IngredientID} value= {ingredient.IngredientID}>
-//             {ingredient.Name}</option>
-//           ))}
-//         </select>
-//     </div>
-
-//     <div className="mb-3">
-//        <label className="form-label">Quantity:</label>
-//         <input type="text" className="form-control" value={ingredientQuantity} onChange={(e) => handleInputChange(e)}/>
-//     </div>
-
-//     <div className="mb-3">
-//       <label className="form-label">Unit:</label>
-//         <input type="text" className="form-control" value={ingredientUnit} onChange={(e) => handleInputChange(e)}/>
-//     </div>
-
-//       <button type="submit" class="btn btn-outline-info">Add Recipe</button>
-
-//     </form>
-//     </div>
-//   );
-// }
-// export default AddRecipes;
