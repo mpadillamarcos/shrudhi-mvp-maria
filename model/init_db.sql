@@ -1,33 +1,58 @@
 --
 -- Drop Tables
 --
+SET
+    foreign_key_checks = 0;
 
-SET foreign_key_checks = 0;
+DROP TABLE IF EXISTS `recipe_ingredients`;
 
-DROP TABLE IF EXISTS `RecipeIngredients`;
-DROP TABLE IF EXISTS `Recipes`;
-DROP TABLE IF EXISTS `Ingredients`;
+DROP TABLE IF EXISTS `recipes`;
 
-SET foreign_key_checks = 1;
+DROP TABLE IF EXISTS `ingredients`;
+
+DROP TABLE IF EXISTS `users`;
+
+SET
+    foreign_key_checks = 1;
+
 --
+CREATE TABLE `users`(
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `username` VARCHAR(255) NOT NULL,
+    `password` VARCHAR(255) NOT NULL
+);
 
+CREATE TABLE `recipe_ingredients`(
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `ingredient_id` BIGINT NOT NULL,
+    `quantity` DECIMAL(8, 2) NOT NULL,
+    `units` VARCHAR(20) NOT NULL,
+    `recipe_id` BIGINT NOT NULL
+);
 
-CREATE TABLE `Ingredients`(
-    `IngredientID` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `Name` VARCHAR(255) NOT NULL
+CREATE TABLE `recipes`(
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `title` VARCHAR(255) NOT NULL,
+    `instructions` LONGTEXT NOT NULL,
+    `user_id` BIGINT NOT NULL
 );
-CREATE TABLE `Recipes`(
-    `RecipeID` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `Name` VARCHAR(255) NOT NULL,
-    `Instructions` LONGTEXT NOT NULL
+
+CREATE TABLE `ingredients`(
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `name` VARCHAR(255) NOT NULL
 );
-CREATE TABLE `RecipeIngredients`(
-    `RecipeID` INT UNSIGNED NOT NULL,
-    `IngredientID` INT UNSIGNED NOT NULL,
-    `Quantity` DECIMAL(5,2) NOT NULL,
-    `Unit` VARCHAR(20) NOT NULL
-);
+
 ALTER TABLE
-    `RecipeIngredients` ADD CONSTRAINT `recipeingredients_ingredientid_foreign` FOREIGN KEY(`IngredientID`) REFERENCES `Ingredients`(`IngredientID`);
+    `recipes`
+ADD
+    CONSTRAINT `recipes_user_id_foreign` FOREIGN KEY(`user_id`) REFERENCES `users`(`id`);
+
 ALTER TABLE
-    `RecipeIngredients` ADD CONSTRAINT `recipeingredients_recipeid_foreign` FOREIGN KEY(`RecipeID`) REFERENCES `Recipes`(`RecipeID`);
+    `recipe_ingredients`
+ADD
+    CONSTRAINT `recipe_ingredients_recipe_id_foreign` FOREIGN KEY(`recipe_id`) REFERENCES `recipes`(`id`);
+
+ALTER TABLE
+    `recipe_ingredients`
+ADD
+    CONSTRAINT `recipe_ingredients_ingredient_id_foreign` FOREIGN KEY(`ingredient_id`) REFERENCES `ingredients`(`id`);
