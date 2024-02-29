@@ -25,6 +25,10 @@ const db = require("../model/helper");
 5. POST /generate-recipe: Generate a recipe based on input ingredients
 */
 
+router.get("/", function (req, res, next) {
+  res.send({ title: "Express" });
+});
+
 /* 1. GET /recipes: Get all recipes*/
 
 router.get("/recipes", async (req, res) => {
@@ -48,7 +52,7 @@ router.get("/recipes/:id", async (req, res) => {
     const recipeId = req.params.id;
 
     // Query the database to retrieve the specific recipe by its ID
-    const query = `SELECT * FROM Recipes WHERE RecipeID = ${recipeId}`;
+    const query = `SELECT * FROM recipes WHERE RecipeID = ${recipeId}`;
     const recipes = await db(query);
 
     // Check if the recipe exists
@@ -74,7 +78,7 @@ router.post("/recipes", async (req, res) => {
     // Insert the recipe into the recipes table
     // await db(`INSERT INTO recipes (Name , Instructions) VALUES ("${name}" , "${instructions}");`);
     let results = await db(
-      `INSERT INTO recipes (Name, Instructions) VALUES ("${name}", "${instructions}");SELECT LAST_INSERT_ID();`
+      `INSERT INTO recipes (title, instructions) VALUES ("${name}", "${instructions}");SELECT LAST_INSERT_ID();`
     );
     // Get the ID of the last inserted recipe
     // const [rows] = await db(`SELECT LAST_INSERT_ID() as RecipeID;`);
@@ -142,19 +146,18 @@ router.post("/generate-recipe", async (req, res) => {
     res.status(500).json(error);
   }
 });
-  // SQL query to fetch recipes based on ingredients
-  //   const query = ` SELECT r.*
-  //   FROM recipes AS r
-  //   INNER JOIN recipeingredients ri ON r.RecipeID = ri.RecipeID
-  //   WHERE IngredientID IN (${ingredients.join(",")})
-  //   GROUP BY r.RecipeID
-  //   HAVING COUNT(*) <= (${ingredients.length})
-  // `;
+// SQL query to fetch recipes based on ingredients
+//   const query = ` SELECT r.*
+//   FROM recipes AS r
+//   INNER JOIN recipeingredients ri ON r.RecipeID = ri.RecipeID
+//   WHERE IngredientID IN (${ingredients.join(",")})
+//   GROUP BY r.RecipeID
+//   HAVING COUNT(*) <= (${ingredients.length})
+// `;
 
-  // SQL query to fetch recipes based on ingredients
-  // the recipe needs to have some of the ingredients in our list, and none that are not in our list
-  // we have to check that the recipe has all the ingredients and doesn't need more ingredients that are not in our list
-
+// SQL query to fetch recipes based on ingredients
+// the recipe needs to have some of the ingredients in our list, and none that are not in our list
+// we have to check that the recipe has all the ingredients and doesn't need more ingredients that are not in our list
 
 /* Get Recipe Ingredients table */
 /* 6. GET /recipeingredients: Get all recipe ingredients */

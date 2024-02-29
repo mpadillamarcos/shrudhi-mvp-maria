@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from "react";
+import AddIngredients from "../components/AddIngredients";
+import { Typeahead } from "react-bootstrap-typeahead";
 
 function AddRecipes() {
   const [recipeName, setRecipeName] = useState(""); //Stores the name of the recipe.
   const [recipeInstructions, setRecipeInstructions] = useState(""); //Stores the instructions for preparing the recipe.
   const [ingredients, setIngredients] = useState([]); //Holds an array of available ingredients fetched from the database.
-  const [selectedIngredients, setSelectedIngredients] = useState([]); //Keeps track of the ingredients selected by the user.
-  const [ingredientQuantities, setIngredientQuantities] = useState([]); //Stores the quantities corresponding to each selected ingredient.
-  const [ingredientUnits, setIngredientUnits] = useState([]); //Stores the units of measurement for the ingredients.
-  const [newIngredientIndex, setNewIngredientIndex] = useState(0); //Tracks the index of a newly added ingredient (New Ingredient Button)
+  // const [selectedIngredients, setSelectedIngredients] = useState([]); //Keeps track of the ingredients selected by the user.
+  // const [ingredientQuantities, setIngredientQuantities] = useState([]); //Stores the quantities corresponding to each selected ingredient.
+  // const [ingredientUnits, setIngredientUnits] = useState([]); //Stores the units of measurement for the ingredients.
+  // const [newIngredientIndex, setNewIngredientIndex] = useState(0); //Tracks the index of a newly added ingredient (New Ingredient Button)
+  const [inputFields, setInputFields] = useState([
+    { name: null, quantity: "", units: "" },
+  ]);
 
   // fetch the list of ingredients from an API when the component mounts.
   // The fetched data is then stored in the ingredients state variable.
@@ -33,10 +38,10 @@ function AddRecipes() {
     e.preventDefault();
     if (
       !recipeName ||
-      !recipeInstructions ||
-      !selectedIngredients.length ||
-      !ingredientQuantities.length ||
-      !ingredientUnits.length
+      !recipeInstructions
+      // || !selectedIngredients.length ||
+      // !ingredientQuantities.length ||
+      // !ingredientUnits.length
     ) {
       console.error("Please fill in all required fields");
       return;
@@ -48,11 +53,11 @@ function AddRecipes() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: recipeName,
+          title: recipeName,
           instructions: recipeInstructions,
-          ingredients: selectedIngredients.map((ingredient, index) => ({
-            ingredientId: ingredient,
-            quantity: ingredientQuantities[index],
+          ingredients: inputFields.map((ingredient, index) => ({
+            name: ingredient.name[0].name,
+            quantity: ingredient.quantity[index],
             unit: ingredientUnits[index],
           })),
         }),
@@ -76,10 +81,21 @@ function AddRecipes() {
   // These functions handle changes to the selected ingredients, quantities, and units respectively.
   // They update the corresponding state variables as the user interacts with the form inputs.
   const handleIngredient = (index, e) => {
-    if (e.target.value === "newIngredient") {
+    //Shrudhi:
+    // if (e.target.value === "newIngredient") {
+    //   setNewIngredientIndex((prevState) => prevState + 1);
+    //   return;
+    // }
+
+    if (
+      ingredients.filter((ingredient) => ingredient === e.target.value)
+        .length === 0
+    ) {
       setNewIngredientIndex((prevState) => prevState + 1);
-      return;
+      setIngredients([...ingredients, e.target.value]);
+      setSelectedIngredients([...selectedIngredients, e.target.value[index]]);
     }
+
     const newSelectedIngredients = [...selectedIngredients];
     if (index === newIngredientIndex) {
       newSelectedIngredients[newIngredientIndex] = e.target.value;
@@ -104,12 +120,12 @@ function AddRecipes() {
   };
   // This function adds a new set of ingredient input fields dynamically when
   // the user clicks the "New Ingredient" button.
-  const addNewIngredientInput = () => {
-    setSelectedIngredients([...selectedIngredients, ""]);
-    setIngredientQuantities([...ingredientQuantities, ""]);
-    setIngredientUnits([...ingredientUnits, ""]);
-    setNewIngredientIndex((prevState) => prevState + 1);
-  };
+  // const addNewIngredientInput = () => {
+  //   setSelectedIngredients([...selectedIngredients, ""]);
+  //   setIngredientQuantities([...ingredientQuantities, ""]);
+  //   setIngredientUnits([...ingredientUnits, ""]);
+  //   setNewIngredientIndex((prevState) => prevState + 1);
+  // };
 
   return (
     <div className="container mt-5 text-bg-dark p-3 border border-info border-3">
@@ -124,6 +140,7 @@ function AddRecipes() {
             onChange={(e) => setRecipeName(e.target.value)}
           />
         </div>
+
         <div className="mb-3">
           <label className="form-label text-info">Recipe Instructions:</label>
           <textarea
@@ -132,11 +149,66 @@ function AddRecipes() {
             onChange={(e) => setRecipeInstructions(e.target.value)}
           ></textarea>
         </div>
+
+        {/* <div className="row">
+          <div className="col-6">
+            <label>Ingredients:</label>
+            <Typeahead
+              allowNew
+              id="ingredient"
+              labelKey="ingredient"
+              onChange={setIngredients}
+              options={ingredients}
+              placeholder="Write one ingredient"
+              selected={ingredients}
+            />
+          </div>
+          <div className="col-3">
+            <label>Quantities:</label>
+            <Typeahead
+              allowNew
+              id="quantity"
+              labelKey="quantity"
+              onChange={setIngredientQuantities}
+              options={ingredientQuantities}
+              placeholder="Add a number"
+              selected={ingredientQuantities}
+            />
+          </div>
+          <div className="col-3">
+            <label>Units:</label>
+            <Typeahead
+              allowNew
+              id="units"
+              labelKey="units"
+              onChange={setIngredientUnits}
+              options={ingredientUnits}
+              placeholder="Units"
+              selected={ingredientUnits}
+            />
+          </div>
+        </div>  */}
+
         <div className="mb-3">
           <label className="form-label text-info">Ingredients:</label>
-          {selectedIngredients.map((selectedIngredient, index) => (
+          <AddIngredients
+            ingredients={ingredients}
+            inputFields={inputFields}
+            setInputFields={setInputFields}
+          />
+          {/* {selectedIngredients.map((selectedIngredient, index) => (
             <div key={index} className={`row ${index !== 0 ? "mt-3" : ""}`}>
-              <div className="col-4">
+              <div className="col-6">
+                <Typeahead
+                  allowNew
+                  id="ingredient"
+                  labelKey="ingredient"
+                  onChange={(e) => handleIngredient(index, e)}
+                  value={selectedIngredient[index]}
+                  options={ingredients}
+                  placeholder="Write one ingredient"
+                  selected={selectedIngredient[index]}
+                />
                 <select
                   className="form-control"
                   value={selectedIngredient}
@@ -156,7 +228,7 @@ function AddRecipes() {
                   <option value="newIngredient">New Ingredient</option>
                 </select>
               </div>
-              <div className="col-2">
+              <div className="col-3">
                 <input
                   type="text"
                   className="form-control"
@@ -165,7 +237,7 @@ function AddRecipes() {
                   onChange={(e) => handleIngredientQuantity(index, e)}
                 />
               </div>
-              <div className="col-2">
+              <div className="col-3">
                 <input
                   type="text"
                   className="form-control"
@@ -175,8 +247,8 @@ function AddRecipes() {
                 />
               </div>
             </div>
-          ))}
-          <div className="d-flex justify-content-between align-items-center">
+          ))} */}
+          {/* <div>
             <button
               type="button"
               className="btn btn-outline-info"
@@ -186,21 +258,23 @@ function AddRecipes() {
               New Ingredient
             </button>
             <div style={{ flexGrow: 1 }}></div>
-            <button
-              type="submit"
-              className="btn btn-outline-info"
-              style={{ marginTop: "30px" }}
-            >
-              Add Recipe
-            </button>
-          </div>
+          </div> */}
         </div>
+
+        <button
+          type="submit"
+          className="btn btn-outline-info"
+          // style={{ marginTop: "30px" }}
+        >
+          Add Recipe
+        </button>
       </form>
     </div>
   );
 }
 
 export default AddRecipes;
+
 // import React, { useState, useEffect } from 'react';
 // /*
 // Add Recipes Page:
