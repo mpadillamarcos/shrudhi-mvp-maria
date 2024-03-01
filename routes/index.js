@@ -22,25 +22,14 @@ router.get("/recipes", async (req, res) => {
 
 router.get("/recipes/:id", async (req, res) => {
   try {
-    // Extract the ID params from request URL
-    const recipeId = req.params.id;
-
-    // Query the database to retrieve the specific recipe by its ID
-    const query = `SELECT * FROM recipes WHERE RecipeID = ${recipeId}`;
-    const recipes = await db(query);
-
-    // Check if the recipe exists
-    if (recipes.length === 0) {
-      // If not found, return a 404 Not Found response
-      res.status(404).json({ message: "Recipe not found" });
-    } else {
-      // If found, send the recipe as a JSON response
-      res.json(recipes.data);
-    }
+    const recipes = await models.recipes.findOne({
+      where: {
+        id,
+      },
+    });
+    res.send(recipes);
   } catch (error) {
-    // Handle database errors
-    console.error("Error retrieving recipe:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    res.status(500).send(error);
   }
 });
 
