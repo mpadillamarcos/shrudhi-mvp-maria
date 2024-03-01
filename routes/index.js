@@ -2,7 +2,7 @@ var express = require("express");
 var router = express.Router();
 const db = require("../model/helper");
 const models = require("../models");
-import isIdInDatabase from "../guards/isIdInDatabase";
+import recipeIdInDatabase from "../guards/recipeIdInDatabase";
 
 router.get("/", function (req, res, next) {
   res.send({ title: "Express" });
@@ -21,9 +21,9 @@ router.get("/recipes", async (req, res) => {
 
 /* 2. GET /recipes/:id: Get a specific recipe*/
 
-router.get("/recipes/:id", isIdInDatabase, async (req, res) => {
+router.get("/recipes/:id", recipeIdInDatabase, async (req, res) => {
   try {
-    res.send(req.recipe);
+    res.send(req.result);
   } catch (error) {
     res.status(500).send(error);
   }
