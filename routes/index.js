@@ -1,6 +1,7 @@
 var express = require("express");
 var router = express.Router();
 const db = require("../model/helper");
+var models = require("../models");
 
 router.get("/", function (req, res, next) {
   res.send({ title: "Express" });
@@ -10,14 +11,10 @@ router.get("/", function (req, res, next) {
 
 router.get("/recipes", async (req, res) => {
   try {
-    //Search the database to retrieve all the recipes
-    const recipes = await db("SELECT * FROM recipes");
-    //Send the retrieved recipes as a JSON response
-    res.json(recipes);
+    const recipes = await models.recipes.findAll();
+    res.send(recipes);
   } catch (error) {
-    //Handle database error
-    console.error("Error retrieving recipes:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    res.status(500).send(error);
   }
 });
 
