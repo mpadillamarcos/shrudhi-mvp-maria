@@ -1,7 +1,8 @@
 var express = require("express");
 var router = express.Router();
 const db = require("../model/helper");
-var models = require("../models");
+const models = require("../models");
+import isIdInDatabase from "../guards/isIdInDatabase";
 
 router.get("/", function (req, res, next) {
   res.send({ title: "Express" });
@@ -20,14 +21,9 @@ router.get("/recipes", async (req, res) => {
 
 /* 2. GET /recipes/:id: Get a specific recipe*/
 
-router.get("/recipes/:id", async (req, res) => {
+router.get("/recipes/:id", isIdInDatabase, async (req, res) => {
   try {
-    const recipes = await models.recipes.findOne({
-      where: {
-        id,
-      },
-    });
-    res.send(recipes);
+    res.send(req.recipe);
   } catch (error) {
     res.status(500).send(error);
   }
