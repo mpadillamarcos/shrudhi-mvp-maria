@@ -24,10 +24,10 @@ CREATE TABLE `users`(
 
 CREATE TABLE `recipe_ingredients`(
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `recipe_id` BIGINT NOT NULL,
     `ingredient_id` BIGINT NOT NULL,
     `quantity` DECIMAL(8, 2) NOT NULL,
     `units` VARCHAR(20) NOT NULL,
-    `recipe_id` BIGINT NOT NULL
 );
 
 CREATE TABLE `recipes`(
@@ -56,3 +56,8 @@ ALTER TABLE
     `recipe_ingredients`
 ADD
     CONSTRAINT `recipe_ingredients_ingredient_id_foreign` FOREIGN KEY(`ingredient_id`) REFERENCES `ingredients`(`id`);
+
+ALTER TABLE
+    `recipe_ingredients`
+ADD
+    UNIQUE (`name`);

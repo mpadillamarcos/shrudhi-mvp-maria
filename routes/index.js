@@ -2,29 +2,6 @@ var express = require("express");
 var router = express.Router();
 const db = require("../model/helper");
 
-/* Routes Needed: 
-    1. Get Recipes Page:
-      - 5. POST /generate-recipe: Generate a recipe based on input ingredients
-      - 2. GET /recipes/:id: Get a specific recipe
-
-    2. Add Recipes Page:
-      - 3. POST /recipes: Add a new recipe & update recipeingredients table
-      - 4. GET /ingredients
-
-    3. All Recipes:
-      - 1. GET /recipes: Get all recipes
-      - 2. GET /recipes/:id: Get a specific recipe
-*/
-
-/*Routes 
-
-1. GET /recipes: Get all recipes
-2. GET /recipes/:id: Get a specific recipe
-3. POST /recipes: Add a new recipe & update recipeingredients table
-4. GET /ingredients
-5. POST /generate-recipe: Generate a recipe based on input ingredients
-*/
-
 router.get("/", function (req, res, next) {
   res.send({ title: "Express" });
 });
@@ -70,30 +47,27 @@ router.get("/recipes/:id", async (req, res) => {
   }
 });
 
-/* 3 POST /recipes: Add a new recipe & update recipeingredients table */
+/* 3 POST /recipes: Add a new recipe & update ingredients table and recipeingredients table */
 router.post("/recipes", async (req, res) => {
   try {
-    const { name, instructions, ingredients } = req.body;
+    const { title, instructions, ingredients } = req.body;
 
-    // Insert the recipe into the recipes table
-    // await db(`INSERT INTO recipes (Name , Instructions) VALUES ("${name}" , "${instructions}");`);
-    let results = await db(
-      `INSERT INTO recipes (title, instructions) VALUES ("${name}", "${instructions}");SELECT LAST_INSERT_ID();`
+    // Insert the recipe into the recipes table and get the ID of the last inserted recipe
+    let recipe = await db(
+      `INSERT INTO recipes (title, instructions) VALUES ("${title}", "${instructions}");SELECT LAST_INSERT_ID();`
     );
-    // Get the ID of the last inserted recipe
-    // const [rows] = await db(`SELECT LAST_INSERT_ID() as RecipeID;`);
-    // const recipeId = rows[0].RecipeID;
 
-    // const last_id = results.data[0].insertId;
-    // console.log("last_id", last_id);
-    const recipeId = results.data[0].insertId;
+    const recipeId = recipe.data[0].insertId;
     // const recipeId = await db(`SELECT LAST_INSERT_ID();`);
     // console.log("recipeId", recipeId.data[0]);
+
+    //await db(`INSERT INTO ingredients (name) VALUES ("${ingredients.name}");`);
+
     // Construct the values for all ingredients to be inserted
     for (const ingredient of ingredients) {
-      const { ingredientId, quantity, unit } = ingredient;
+      const { name, quantity, units } = ingredient;
       await db(
-        `INSERT INTO recipeingredients (RecipeID, IngredientID, Quantity, Unit) VALUES (${recipeId}, ${ingredientId}, ${quantity}, "${unit}");`
+        `INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity, units) VALUES (${recipeId}, ${name}, ${quantity}, "${units}");`
       );
     }
 

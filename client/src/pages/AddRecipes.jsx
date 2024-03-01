@@ -52,7 +52,8 @@ function AddRecipes() {
           title: recipeName,
           instructions: recipeInstructions,
           ingredients: ingredientFields.map((ingredient, index) => ({
-            name: ingredient.name[0].name,
+            // why do we need the index??
+            name: ingredient.name[0].name[index],
             quantity: ingredient.quantity[index],
             units: ingredient.units[index],
           })),
