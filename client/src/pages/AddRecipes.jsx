@@ -35,25 +35,13 @@ function AddRecipes() {
   // recipe details and sends a POST request to an API endpoint (/api/recipes) to add the recipe.
 
   const handleSubmit = async (e) => {
+    e.preventDefault();
     const form = e.currentTarget;
     if (form.checkValidity() === false) {
-      e.preventDefault();
       e.stopPropagation();
     }
-
     setValidated(true);
-    // e.preventDefault();
-    // if (
-    //   !recipeName ||
-    //   !recipeInstructions ||
-    //   ingredientFields.filter((field) => field.name === null).length > 0
-    //   // || !selectedIngredients.length ||
-    //   // !ingredientQuantities.length ||
-    //   // !ingredientUnits.length
-    // ) {
-    //   console.error("Please fill in all required fields");
-    //   return;
-    // }
+
     try {
       const response = await fetch("/api/recipes", {
         method: "POST",
@@ -66,18 +54,15 @@ function AddRecipes() {
           ingredients: ingredientFields.map((ingredient, index) => ({
             name: ingredient.name[0].name,
             quantity: ingredient.quantity[index],
-            unit: ingredientUnits[index],
+            units: ingredient.units[index],
           })),
         }),
       });
       if (response.ok) {
-        console.log("Recipe and ingredients added successfully");
+        console.log("Recipe and ingredients added successfully!");
         setRecipeName("");
         setRecipeInstructions("");
-        setSelectedIngredients([]);
-        setIngredientQuantities([]);
-        setIngredientUnits([]);
-        setNewIngredientIndex(0);
+        setIngredientFields([{ name: null, quantity: "", units: "" }]);
       } else {
         console.error("Error inserting recipe and ingredients");
       }
