@@ -33,21 +33,36 @@ router.get("/recipes/:id", recipeIdInDatabase, async (req, res) => {
 router.post("/recipes", async (req, res) => {
   try {
     const { title, instructions, ingredients } = req.body;
+
     const recipe = await models.recipes.findOrCreate({
       where: { title: title },
-      defaults: { title, instructions },
+      defaults: { title: title, instructions: instructions },
     });
+    console.log(recipe[0].id);
 
     for (let i = 0; i < ingredients.length; i++) {
-      await models.ingredients.findOrCreate({
+      const item = await models.ingredients.findOrCreate({
         where: { name: ingredients[i].name },
         defaults: { name: ingredients[i].name },
       });
+      console.log(item[i].id);
+      const itemId = await models.ingredients.findOne({
+        where: { name: ingredients[i].name },
+      });
+      console.log(itemId);
+      // await recipe.addIngredient(item, {
+      //   through: {
+      //     quantity: ingredients[i].quantity,
+      //     units: ingredients[i].units,
+      //   },
+      // });
+      await models.recipeIngredients.create({
+        recipeId: recipe[0].id,
+        ingredientId: itemId.dataValues.id,
+        quantity: ingredients[i].quantity,
+        units: ingredients[i].units,
+      });
     }
-
-    // await models.recipeingredients.create()
-    // recipe.addIngredients(ingredients.map((e) => e.id));
-
     res.send(recipe);
   } catch (error) {
     res.status(500).send(error);
