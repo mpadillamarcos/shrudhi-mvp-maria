@@ -23,7 +23,7 @@ function AddRecipes() {
     try {
       const response = await fetch("/api/ingredients");
       const data = await response.json();
-      setIngredients(data.data);
+      setIngredients(data);
     } catch (error) {
       console.error("Error fetching ingredients:", error);
     }

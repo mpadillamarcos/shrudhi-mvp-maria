@@ -31,8 +31,10 @@ export default function AddIngredients({
               newSelectionPrefix="Add a new item: "
               options={
                 ingredients.length > 0
-                  ? // If the ingredients list from the DB isn't showing up, maybe it's because of the ingredients.name
-                    ingredients.map((ingredient) => ingredient.name)
+                  ? // If the ingredients list from the DB isn't showing up, maybe it's because of the ingredient.name
+                    ingredients.map((ingredient) =>
+                      ingredient.name === null ? "" : ingredient.name
+                    )
                   : []
               }
               placeholder="Write one ingredient"
