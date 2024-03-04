@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 /*
 All Recipes:
 1. Need a list of all the recipes according to the name. (GET /recipes: Get all recipes)
@@ -11,10 +11,30 @@ All Recipes:
 */
 
 function AllRecipes() {
-  return (
-    <div>AllRecipes</div>
-  )
-}
+  const [recipes, setRecipes] = useState([]);
+  useEffect(() => {
+    fetchRecipes();
+  }, []);
 
+  const fetchRecipes = async () => {
+    try {
+      const response = await fetch("/api/recipes");
+      const data = await response.json();
+      setRecipes(data);
+    } catch (error) {
+      console.error("Error fetching recipes:", error);
+    }
+  };
+  return (
+    <div>
+      {recipes.map((recipe) => (
+        <div key={recipe.id}>
+          <h3>{recipe.title}</h3>
+          <p>{recipe.instructions}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default AllRecipes;
