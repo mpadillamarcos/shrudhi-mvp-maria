@@ -41,6 +41,15 @@ function GetRecipes() {
     try {
       const response = await fetch("/api/ingredients", options);
       const data = await response.json();
+      data.sort(function (a, b) {
+        if (a.name < b.name) {
+          return -1;
+        }
+        if (a.name > b.name) {
+          return 1;
+        }
+        return 0;
+      });
       setIngredients(data);
     } catch (error) {
       console.error("Error fetching ingredients:", error);
