@@ -34,7 +34,13 @@ router.post("/recipes", async (req, res) => {
   try {
     const { title, instructions, ingredients } = req.body;
     const recipe = await models.recipes.create({ title, instructions });
-    res.send(recipe.data);
+
+    // const { name, quantity, units } = req.body.ingredients;
+    for (let i = 0; i < ingredients.length; i++) {
+      await models.ingredients.create({ name: ingredients[i].name });
+    }
+
+    res.send(recipe);
   } catch (error) {
     res.status(500).send(error);
   }
@@ -77,13 +83,19 @@ router.post("/recipes", async (req, res) => {
 /* 4. GET /ingredients */
 router.get("/ingredients", async (req, res) => {
   try {
-    // Query the database to fetch all available ingredients
-    const ingredients = await db("SELECT * FROM ingredients");
-    res.json(ingredients);
+    const ingredients = await models.ingredients.findAll();
+    res.send(ingredients);
   } catch (error) {
-    console.error("Error retrieving ingredients:", error);
-    res.status(500).json({ error: "Error retrieving ingredients" });
+    res.status(500).send(error);
   }
+  // try {
+  //   // Query the database to fetch all available ingredients
+  //   const ingredients = await db("SELECT * FROM ingredients");
+  //   res.json(ingredients);
+  // } catch (error) {
+  //   console.error("Error retrieving ingredients:", error);
+  //   res.status(500).json({ error: "Error retrieving ingredients" });
+  // }
 });
 
 /* 5. Generate recipe */
