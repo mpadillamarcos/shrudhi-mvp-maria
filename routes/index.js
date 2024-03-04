@@ -67,40 +67,6 @@ router.post("/recipes", async (req, res) => {
   } catch (error) {
     res.status(500).send(error);
   }
-  // try {
-  //   const { title, instructions, ingredients } = req.body;
-
-  //   // Insert the recipe into the recipes table and get the ID of the last inserted recipe
-  //   let recipe = await db(
-  //     `INSERT INTO recipes (title, instructions) VALUES ("${title}", "${instructions}");SELECT LAST_INSERT_ID();`
-  //   );
-
-  //   const recipeId = recipe.data[0].insertId;
-  //   // const recipeId = await db(`SELECT LAST_INSERT_ID();`);
-  //   // console.log("recipeId", recipeId.data[0]);
-
-  //   //await db(`INSERT INTO ingredients (name) VALUES ("${ingredients.name}");`);
-
-  //   // Construct the values for all ingredients to be inserted
-  //   for (const ingredient of ingredients) {
-  //     const { name, quantity, units } = ingredient;
-  //     await db(
-  //       `INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity, units) VALUES (${recipeId}, ${name}, ${quantity}, "${units}");`
-  //     );
-  //   }
-
-  //   // for (const id of ingredientId) {
-  //   //   // Insert all ingredients into the recipe_ingredients table in a single query
-  //   //   await db(`INSERT INTO recipeingredients (RecipeID, IngredientID, Quantity, Unit) VALUES (${last_id}, ${id}, ${quantity}, "${unit}");`);
-  //   // }
-
-  //   res
-  //     .status(201)
-  //     .json({ message: "Recipe and ingredients inserted successfully" });
-  // } catch (error) {
-  //   console.error("Error inserting recipe and ingredients:", error);
-  //   res.status(500).json(error);
-  // }
 });
 
 /* 4. GET /ingredients */
@@ -111,14 +77,6 @@ router.get("/ingredients", async (req, res) => {
   } catch (error) {
     res.status(500).send(error);
   }
-  // try {
-  //   // Query the database to fetch all available ingredients
-  //   const ingredients = await db("SELECT * FROM ingredients");
-  //   res.json(ingredients);
-  // } catch (error) {
-  //   console.error("Error retrieving ingredients:", error);
-  //   res.status(500).json({ error: "Error retrieving ingredients" });
-  // }
 });
 
 /* 5. Generate recipe */

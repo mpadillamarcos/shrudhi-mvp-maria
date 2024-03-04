@@ -51,11 +51,12 @@ function AddRecipes() {
         body: JSON.stringify({
           title: recipeName,
           instructions: recipeInstructions,
-          ingredients: ingredientFields.map((ingredient, index) => ({
-            // why do we need the index??
-            name: ingredient.name[0].name[index],
-            quantity: ingredient.quantity[index],
-            units: ingredient.units[index],
+          ingredients: ingredientFields.map((ingredient) => ({
+            name: ingredient.name[0].name
+              ? ingredient.name[0].name
+              : ingredient.name[0],
+            quantity: ingredient.quantity,
+            units: ingredient.units,
           })),
         }),
       });
