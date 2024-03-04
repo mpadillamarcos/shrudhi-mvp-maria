@@ -41,17 +41,15 @@ function GetRecipes() {
     try {
       const response = await fetch("/api/ingredients", options);
       const data = await response.json();
-      console.log(response);
-      setIngredients(data.data);
-      console.log(data.data);
+      setIngredients(data);
     } catch (error) {
       console.error("Error fetching ingredients:", error);
     }
   };
 
   // Function to handle selection of ingredients
-//  This function is called when the user selects ingredients from the dropdown.
-// It extracts the values of the selected options and updates the selectedIngredients state accordingly.
+  //  This function is called when the user selects ingredients from the dropdown.
+  // It extracts the values of the selected options and updates the selectedIngredients state accordingly.
   const handleIngredientSelect = (e) => {
     const selectedValues = Array.from(
       e.target.selectedOptions,
@@ -61,9 +59,9 @@ function GetRecipes() {
   };
 
   // Function to submit selected ingredients and generate recipe
-//  This function is called when the user clicks the "Generate Recipe" button.
-// It sends a POST request to /api/generate-recipe with the selected ingredients in the request body.
-// Upon receiving a successful response, it updates the generatedRecipes state with the generated recipes.
+  //  This function is called when the user clicks the "Generate Recipe" button.
+  // It sends a POST request to /api/generate-recipe with the selected ingredients in the request body.
+  // Upon receiving a successful response, it updates the generatedRecipes state with the generated recipes.
   const handleSubmit = async () => {
     try {
       const response = await fetch("/api/generate-recipe", {
@@ -86,12 +84,12 @@ function GetRecipes() {
     }
   };
 
-// The component renders a form with a dropdown menu allowing users to select multiple ingredients.
-//It renders a button labeled "Generate Recipe" which triggers the handleSubmit function when clicked.
-//If there are generated recipes (generatedRecipes array is not empty), it renders them in a section titled "Generated Recipes".
-//The generated recipes are displayed with their names and instructions.
-//{generatedRecipes.length !== 0 && (...)}: This is a conditional rendering in JSX. It checks whether the length of the generatedRecipes array is not equal to 0. 
-// If this condition is true, the JSX code inside the parentheses ((...)) is rendered; otherwise, nothing is rendered.
+  // The component renders a form with a dropdown menu allowing users to select multiple ingredients.
+  //It renders a button labeled "Generate Recipe" which triggers the handleSubmit function when clicked.
+  //If there are generated recipes (generatedRecipes array is not empty), it renders them in a section titled "Generated Recipes".
+  //The generated recipes are displayed with their names and instructions.
+  //{generatedRecipes.length !== 0 && (...)}: This is a conditional rendering in JSX. It checks whether the length of the generatedRecipes array is not equal to 0.
+  // If this condition is true, the JSX code inside the parentheses ((...)) is rendered; otherwise, nothing is rendered.
   return (
     <div className="container mt-5 text-bg-dark p-3 border border-info border-3">
       <h2 className="text-info mb-3">Get Recipes</h2>
@@ -105,12 +103,9 @@ function GetRecipes() {
           value={selectedIngredients}
           onChange={handleIngredientSelect}
         >
-          {ingredients.map((ingredient) => (
-            <option
-              key={ingredient.IngredientID}
-              value={ingredient.IngredientID}
-            >
-              {ingredient.Name}
+          {ingredients.map((ingredient, index) => (
+            <option key={index} value={ingredient.name}>
+              {ingredient.name}
             </option>
           ))}
         </select>
@@ -122,7 +117,7 @@ function GetRecipes() {
       </button>
 
       {/* Section to display generated recipe */}
-      {generatedRecipes.length !==0 &&(
+      {generatedRecipes.length !== 0 && (
         <div className="mt-3">
           <h3>Generated Recipes</h3>
           {generatedRecipes.map((recipe) => (
@@ -141,4 +136,3 @@ function GetRecipes() {
   );
 }
 export default GetRecipes;
-
