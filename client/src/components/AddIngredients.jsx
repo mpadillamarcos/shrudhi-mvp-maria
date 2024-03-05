@@ -9,7 +9,10 @@ export default function AddIngredients({
   inputFields,
 }) {
   const handleAddField = () => {
-    setInputFields([...inputFields, { name: null, quantity: "", units: "" }]);
+    setInputFields([
+      ...inputFields,
+      { name: null, quantity: undefined, units: "" },
+    ]);
   };
 
   const handleChange = (index, fieldName, selected) => {

@@ -9,7 +9,7 @@ function AddRecipes() {
   const [recipeInstructions, setRecipeInstructions] = useState(""); //Stores the instructions for preparing the recipe.
   const [ingredients, setIngredients] = useState([]); //Holds an array of available ingredients fetched from the database.
   const [ingredientFields, setIngredientFields] = useState([
-    { name: null, quantity: "", units: "" },
+    { name: null, quantity: undefined, units: "" },
   ]);
   const [validated, setValidated] = useState(false);
 
@@ -73,9 +73,9 @@ function AddRecipes() {
         console.log("Recipe and ingredients added successfully!");
         setRecipeName("");
         setRecipeInstructions("");
-        setIngredientFields([{ name: null, quantity: "", units: "" }]);
+        setIngredientFields([{ name: null, quantity: undefined, units: "" }]);
       } else {
-        console.error("Error inserting recipe and ingredients");
+        console.error(error);
       }
     } catch (error) {
       console.error("Error:", error);
