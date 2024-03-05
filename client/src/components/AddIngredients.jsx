@@ -34,8 +34,7 @@ export default function AddIngredients({
               newSelectionPrefix="Add a new item: "
               options={
                 ingredients.length > 0
-                  ? // If the ingredients list from the DB isn't showing up, maybe it's because of the ingredient.name
-                    ingredients.map((ingredient) =>
+                  ? ingredients.map((ingredient) =>
                       ingredient.name === null ? "" : ingredient.name
                     )
                   : []
@@ -70,7 +69,7 @@ export default function AddIngredients({
         </Row>
       ))}
       <button type="button" onClick={handleAddField}>
-        New Ingredient
+        Add Ingredient
       </button>
     </div>
   );

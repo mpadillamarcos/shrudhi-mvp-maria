@@ -22,15 +22,33 @@
 // export default GetRecipes;
 
 import React, { useState, useEffect } from "react";
-import AddIngredients from "../components/AddIngredients";
 import Form from "react-bootstrap/Form";
+import { Typeahead } from "react-bootstrap-typeahead";
 
 function FilterRecipes() {
   // State variables
   const [ingredients, setIngredients] = useState([]); //Stores the list of available ingredients fetched from an API.
-  const [selectedIngredients, setSelectedIngredients] = useState([]); //Keeps track of the ingredients selected by the user.
+  const [selectedIngredients, setSelectedIngredients] = useState([]); //Keeps track of the IDs of the ingredients selected by the user.
+  const [ingredientFields, setIngredientFields] = useState([{ name: null }]);
   const [filteredRecipes, setFilteredRecipes] = useState([]); //Stores the list of recipes generated based on the selected ingredients.
-  const [validated, setValidated] = useState(false);
+
+  const handleAddField = () => {
+    setIngredientFields([...ingredientFields, { name: null }]);
+  };
+
+  const handleChange = (index, selected) => {
+    const ingredientInformation = [...ingredientFields];
+    ingredientInformation[index] = selected;
+    setIngredientFields(ingredientInformation);
+    console.log(ingredientInformation);
+    const ingredientName = ingredientInformation[index][0];
+    console.log(ingredientName);
+    const ingredientID = ingredients.find(
+      (ingredient) => ingredient.name === ingredientName
+    ).id;
+    console.log(ingredientID);
+    setSelectedIngredients([...selectedIngredients, ingredientID]);
+  };
 
   // Effect hook to fetch ingredients data from the backend when component mounts
   useEffect(() => {
@@ -74,13 +92,8 @@ function FilterRecipes() {
   //  This function is called when the user clicks the "Generate Recipe" button.
   // It sends a POST request to /api/generate-recipe with the selected ingredients in the request body.
   // Upon receiving a successful response, it updates the generatedRecipes state with the generated recipes.
-  const handleSubmit = async () => {
-    const form = e.currentTarget;
-    if (form.checkValidity() === false) {
-      e.stopPropagation();
-    }
-    setValidated(true);
-
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
       const response = await fetch("/api/generate-recipe", {
         method: "POST",
@@ -89,14 +102,16 @@ function FilterRecipes() {
         },
 
         body: JSON.stringify({
-          ingredients: selectedIngredients.map((ingredient) =>
-            ingredient.name[0] ? ingredient.name[0] : null
+          ingredients: selectedIngredients.map(
+            (ingredient) => ingredient
+            // ingredient.id ? ingredient.id : null
           ),
         }),
       });
       if (response.ok) {
         const data = await response.json();
-        setFilteredRecipes(data.recipes.data); // Update state with generated recipe
+        console.log(data);
+        setFilteredRecipes(data); // Update state with generated recipe
       } else {
         console.error("Error generating recipe");
       }
@@ -116,39 +131,62 @@ function FilterRecipes() {
       <h2 className="text-info mb-3">Filter Recipes</h2>
 
       {/* Form for selecting ingredients */}
-      <Form noValidate validated={validated} onSubmit={handleSubmit}>
-        <div className="mb-3">
+      <Form onSubmit={handleSubmit}>
+        <div>
           <label className="form-label text-info">Select Ingredients:</label>
-          <AddIngredients
+          <div>
+            {ingredientFields.map((field, index) => (
+              <div className="mb-3">
+                <Typeahead
+                  id={`name-${index}`}
+                  labelKey="name"
+                  onChange={(selected) => handleChange(index, selected)}
+                  newSelectionPrefix="Add a new item: "
+                  options={
+                    ingredients.length > 0
+                      ? ingredients.map((ingredient) =>
+                          ingredient.name === null ? "" : ingredient.name
+                        )
+                      : []
+                  }
+                  placeholder="Write one ingredient"
+                  value={field.name}
+                  inputProps={{ required: true }}
+                />
+              </div>
+            ))}
+          </div>
+          <button type="button" onClick={handleAddField}>
+            Add Ingredient
+          </button>
+
+          {/* <AddIngredients
             ingredients={ingredients}
             inputFields={selectedIngredients}
             setInputFields={setSelectedIngredients}
-          />
+          /> */}
           {/* <select
           multiple
           className="form-control"
           value={selectedIngredients}
-          onChange={handleIngredientSelect}
-        >
+          onChange={handleIngredientSelect}>
           {ingredients.map((ingredient, index) => (
             <option key={index} value={ingredient.name}>
               {ingredient.name}
             </option>
           ))}
-        </select> */}
+          </select> */}
         </div>
 
         {/* Button to submit selected ingredients */}
-        <button className="btn btn-outline-info" onClick={handleSubmit}>
-          Filter Recipes
-        </button>
+        <button className="btn btn-outline-info mt-3">Filter Recipes</button>
       </Form>
       {/* Section to display generated recipe */}
       {filteredRecipes.length !== 0 && (
         <div className="mt-3">
           <h3>Filtered Recipes</h3>
           {filteredRecipes.map((recipe) => (
-            <div key={recipe.RecipeID}>
+            <div key={recipe.id}>
               <p>
                 <strong>Title:</strong> {recipe.Name}
               </p>
