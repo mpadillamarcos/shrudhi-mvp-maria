@@ -68,8 +68,12 @@ export default function AddIngredients({
           </Form.Group>
         </Row>
       ))}
-      <button type="button" onClick={handleAddField}>
-        Add Ingredient
+      <button
+        type="button"
+        className="btn btn-secondary"
+        onClick={handleAddField}
+      >
+        +
       </button>
     </div>
   );

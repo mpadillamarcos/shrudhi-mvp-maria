@@ -4,6 +4,7 @@ import { Typeahead } from "react-bootstrap-typeahead";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Table from "react-bootstrap/Table";
+import { Info } from "react-flaticons";
 
 function FilterRecipes() {
   // State variables
@@ -107,11 +108,11 @@ function FilterRecipes() {
   }
 
   return (
-    <div className="container mt-5 text-bg-dark p-3 border border-info border-3">
-      <h2 className="text-info mb-3">Filter Recipes</h2>
+    <div className="container text-center">
+      <h2 className="text-success m-3">Filter Recipes</h2>
       <Form onSubmit={handleSubmit}>
         <div>
-          <label className="form-label text-info">Select Ingredients:</label>
+          <label className="form-label text-body">Select Ingredients:</label>
           <div>
             {ingredientFields.map((field, index) => (
               <div className="mb-3" key={index}>
@@ -134,31 +135,37 @@ function FilterRecipes() {
               </div>
             ))}
           </div>
-          <button type="button" onClick={handleAddField}>
+          <button className="btn btn-secondary" onClick={handleAddField}>
             Add Ingredient
           </button>
         </div>
-        <button className="btn btn-outline-info mt-3">Filter Recipes</button>
+        <button className="btn btn-outline-primary mt-3">Filter Recipes</button>
       </Form>
 
       {filteredRecipes.length !== 0 && (
         <div key={filteredRecipes.id} className="mt-3">
-          <h3>Filtered Recipes</h3>
-          {filteredRecipes.map((recipe) => (
-            <div key={recipe.id} className="card">
-              <p>
-                <strong>{recipe.title}</strong>
-              </p>
-              <p>
-                <strong>Instructions:</strong>{" "}
-                {recipe.instructions.slice(0, 20)}
-                ...
-              </p>
-              <Button onClick={() => handleShow(recipe)}>
-                More information
-              </Button>
+          <h4 className="text-success">Results</h4>
+          <div className="container text-center">
+            <div className="row">
+              {filteredRecipes.map((recipe) => (
+                <div key={recipe.id} className="card mx-2 col">
+                  <p>
+                    <strong>{recipe.title}</strong>
+                  </p>
+                  <p>
+                    <strong>Instructions:</strong>{" "}
+                    {recipe.instructions.slice(0, 20)}
+                    ...
+                  </p>
+                  <div>
+                    <Button onClick={() => handleShow(recipe)}>
+                      <Info />
+                    </Button>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
           <Modal
             show={show}
             fullscreen={true}
@@ -187,12 +194,12 @@ function FilterRecipes() {
                       <td>
                         {ingredient.recipeIngredients.quantity
                           ? ingredient.recipeIngredients.quantity
-                          : "No available quantities"}
+                          : "No quantities available"}
                       </td>
                       <td>
                         {ingredient.recipeIngredients.units
                           ? ingredient.recipeIngredients.units
-                          : "No available units"}
+                          : "No units available"}
                       </td>
                     </tr>
                   ))}

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import AddIngredients from "../components/AddIngredients";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
-import Button from "react-bootstrap/Button";
 
 function AddRecipes() {
   const [recipeName, setRecipeName] = useState(""); //Stores the name of the recipe.
@@ -83,8 +82,8 @@ function AddRecipes() {
   };
 
   return (
-    <div className="container mt-5 text-bg-dark p-3 border border-info border-3">
-      <h2 className="text-info mb-3">Add Recipes</h2>
+    <div className="container mt-5">
+      <h2 className="text-success mb-3">Add Recipes</h2>
       <Form noValidate validated={validated} onSubmit={handleSubmit}>
         <InputGroup hasValidation className="mb-3">
           <Form.Control
@@ -116,9 +115,9 @@ function AddRecipes() {
           inputFields={ingredientFields}
           setInputFields={setIngredientFields}
         />
-        <Button className="mt-3" type="submit">
+        <button className="btn btn-outline-primary mt-3" type="submit">
           Add Recipe
-        </Button>
+        </button>
       </Form>
     </div>
   );

@@ -6,6 +6,7 @@ import FilterRecipes from "./pages/FilterRecipes";
 import AddRecipes from "./pages/AddRecipes";
 import Page404 from "./pages/Page404";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { Book } from "react-flaticons";
 /*
 Home Page:
 Three buttons: 
@@ -24,44 +25,37 @@ Three buttons:
 function App() {
   return (
     <div className="App">
-      <div
-        className="card bg-dark border-info"
-        style={{
-          backgroundColor: "#FFA07A",
-          borderWidth: "3px",
-          borderStyle: "solid",
-          borderRadius: "10px",
-        }}
-      >
-        <div className="card-body">
-          <div className="text-center mb-4 mt-2">
-            {" "}
-            {/* Wrap the heading in its own container */}
-            <h1 className="text-info">My Recipe Book</h1>{" "}
-            {/* Keep the heading without margin classes */}
+      <div className="text-center">
+        <div className="text-center mb-1 mt-2">
+          <div className=" text-center">
+            <h1 className="text-danger mb-3">
+              My Recipe Book <Book size="35px" />
+            </h1>
           </div>
-          <ul className="d-flex justify-content-center">
-            <button className="btn btn-outline-info mx-2 ">
-              <Link to="/" className="text-info">
-                Home
-              </Link>
-            </button>
-            <button className="btn btn-outline-info mx-2">
-              <Link to="/all-recipes" className="text-info">
-                All Recipes
-              </Link>
-            </button>
-            <button className="btn btn-outline-info mx-2">
-              <Link to="/get-recipes" className="text-info">
-                Filter Recipes
-              </Link>
-            </button>
-            <button className="btn btn-outline-info mx-2">
-              <Link to="/add-recipes" className="text-info">
-                Add Recipes
-              </Link>
-            </button>
-          </ul>
+          <div className="text-center">
+            <ul>
+              <button className="btn btn-warning ms-1">
+                <Link to="/" className="text-body">
+                  Home
+                </Link>
+              </button>
+              <button className="btn btn-warning ms-1">
+                <Link to="/add-recipes" className="text-body">
+                  Add Recipes
+                </Link>
+              </button>
+              <button className="btn btn-warning ms-1">
+                <Link to="/all-recipes" className="text-body">
+                  All Recipes
+                </Link>
+              </button>
+              <button className="btn btn-warning ms-1">
+                <Link to="/get-recipes" className="text-body">
+                  Filter Recipes
+                </Link>
+              </button>
+            </ul>
+          </div>
         </div>
       </div>
 
@@ -70,7 +64,6 @@ function App() {
         <Route path="/all-recipes" element={<AllRecipes />} />
         <Route path="/get-recipes" element={<FilterRecipes />} />
         <Route path="/add-recipes" element={<AddRecipes />} />
-        {/* <Route path="/recipes/:id" element={OneRecipe />} /> */}
         <Route path="*" element={<Page404 />} />
       </Routes>
     </div>

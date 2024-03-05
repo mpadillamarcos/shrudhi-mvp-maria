@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Table from "react-bootstrap/Table";
+import { Info } from "react-flaticons";
 /*
 All Recipes:
 1. Need a list of all the recipes according to the name. (GET /recipes: Get all recipes)
@@ -59,20 +60,25 @@ function AllRecipes() {
   }
 
   return (
-    <div>
-      {recipes.map((recipe) => (
-        <div key={recipe.id} className="card" onClick={() => setShow(true)}>
-          <h3>{recipe.title}</h3>
-          <p>{recipe.instructions.slice(0, 20)}...</p>
-          <Button onClick={() => handleShow(recipe)}>More information</Button>
-        </div>
-      ))}
-      <Modal
-        show={show}
-        fullscreen={true}
-        onHide={() => setShow(false)}
-        animation={true}
-      >
+    <div className="container">
+      <div className="row">
+        {recipes.map((recipe) => (
+          <div key={recipe.id} className="card m-2 col-2">
+            <h3>{recipe.title}</h3>
+            <p>{recipe.instructions.slice(0, 20)}...</p>
+            <div>
+              <Button
+                className="btn btn-primary"
+                onClick={() => handleShow(recipe)}
+              >
+                <Info />
+              </Button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <Modal show={show} onHide={() => setShow(false)} animation={true}>
         <Modal.Header closeButton>
           <Modal.Title>{recipe.title}</Modal.Title>
         </Modal.Header>
@@ -93,12 +99,12 @@ function AllRecipes() {
                   <td>
                     {ingredient.recipeIngredients.quantity
                       ? ingredient.recipeIngredients.quantity
-                      : "No available quantities"}
+                      : "No quantities available"}
                   </td>
                   <td>
                     {ingredient.recipeIngredients.units
                       ? ingredient.recipeIngredients.units
-                      : "No available units"}
+                      : "No units available"}
                   </td>
                 </tr>
               ))}
