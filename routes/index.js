@@ -106,22 +106,24 @@ router.post("/generate-recipe", async (req, res) => {
 /* 6. GET /recipeingredients: Get all recipe ingredients */
 router.get("/recipeingredients", async (req, res) => {
   try {
-    // Query the database to fetch all recipe ingredients
-    const ingredients = await db("SELECT * FROM recipeingredients");
-    res.json(ingredients);
+    const { recipeId } = req.body;
+    const recipe = await models.recipes.findOne({
+      where: { id: recipeId },
+      include: [
+        {
+          model: models.ingredients,
+          through: {
+            model: models.recipeIngredients,
+            attributes: ["quantity", "units"],
+          },
+        },
+      ],
+    });
+    const ingredientsWithDetails = recipe ? recipe.ingredients : [];
+    res.send(ingredientsWithDetails);
   } catch (error) {
-    console.error("Error retrieving recipe ingredients");
-    res.status(500).json(error);
+    res.status(500).send(error);
   }
 });
-// const query = `
-// SELECT * FROM recipes
-// WHERE recipe_id IN (
-//   SELECT recipe_id FROM recipe_ingredients
-//   WHERE ingredient_id IN (1,2,3)
-//   GROUP BY recipe_id
-//   HAVING COUNT(*) <= 3
-// )
-// `;
 
 module.exports = router;
