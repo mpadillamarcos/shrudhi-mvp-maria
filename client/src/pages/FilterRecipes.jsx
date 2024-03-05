@@ -23,7 +23,7 @@
 
 import React, { useState, useEffect } from "react";
 
-function GetRecipes() {
+function FilterRecipes() {
   // State variables
   const [ingredients, setIngredients] = useState([]); //Stores the list of available ingredients fetched from an API.
   const [selectedIngredients, setSelectedIngredients] = useState([]); //Keeps track of the ingredients selected by the user.
@@ -101,7 +101,7 @@ function GetRecipes() {
   // If this condition is true, the JSX code inside the parentheses ((...)) is rendered; otherwise, nothing is rendered.
   return (
     <div className="container mt-5 text-bg-dark p-3 border border-info border-3">
-      <h2 className="text-info mb-3">Get Recipes</h2>
+      <h2 className="text-info mb-3">Filter Recipes</h2>
 
       {/* Form for selecting ingredients */}
       <div className="mb-3">
@@ -122,17 +122,17 @@ function GetRecipes() {
 
       {/* Button to submit selected ingredients */}
       <button className="btn btn-outline-info" onClick={handleSubmit}>
-        Generate Recipe
+        Filter Recipes
       </button>
 
       {/* Section to display generated recipe */}
       {generatedRecipes.length !== 0 && (
         <div className="mt-3">
-          <h3>Generated Recipes</h3>
+          <h3>Filtered Recipes</h3>
           {generatedRecipes.map((recipe) => (
             <div key={recipe.RecipeID}>
               <p>
-                <strong>Name:</strong> {recipe.Name}
+                <strong>Title:</strong> {recipe.Name}
               </p>
               <p>
                 <strong>Instructions:</strong> {recipe.Instructions}
@@ -144,4 +144,4 @@ function GetRecipes() {
     </div>
   );
 }
-export default GetRecipes;
+export default FilterRecipes;

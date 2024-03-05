@@ -2,7 +2,7 @@ import { Routes, Route, Link } from "react-router-dom";
 import "./App.css";
 import Home from "./pages/Home";
 import AllRecipes from "./pages/AllRecipes";
-import GetRecipes from "./pages/GetRecipes";
+import FilterRecipes from "./pages/FilterRecipes";
 import AddRecipes from "./pages/AddRecipes";
 import Page404 from "./pages/Page404";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -53,7 +53,7 @@ function App() {
             </button>
             <button className="btn btn-outline-info mx-2">
               <Link to="/get-recipes" className="text-info">
-                Get Recipes
+                Filter Recipes
               </Link>
             </button>
             <button className="btn btn-outline-info mx-2">
@@ -68,7 +68,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/all-recipes" element={<AllRecipes />} />
-        <Route path="/get-recipes" element={<GetRecipes />} />
+        <Route path="/get-recipes" element={<FilterRecipes />} />
         <Route path="/add-recipes" element={<AddRecipes />} />
         {/* <Route path="/recipes/:id" element={OneRecipe />} /> */}
         <Route path="*" element={<Page404 />} />
