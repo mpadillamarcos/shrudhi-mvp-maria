@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
 /*
 All Recipes:
 1. Need a list of all the recipes according to the name. (GET /recipes: Get all recipes)
@@ -12,6 +14,9 @@ All Recipes:
 
 function AllRecipes() {
   const [recipes, setRecipes] = useState([]);
+  const [recipe, setRecipe] = useState([]);
+  const [show, setShow] = useState(false);
+
   useEffect(() => {
     fetchRecipes();
   }, []);
@@ -25,14 +30,32 @@ function AllRecipes() {
       console.error("Error fetching recipes:", error);
     }
   };
+
+  function handleShow(recipe) {
+    setRecipe(recipe);
+    setShow(true);
+  }
+
   return (
     <div>
       {recipes.map((recipe) => (
-        <div key={recipe.id}>
+        <div key={recipe.id} className="card" onClick={() => setShow(true)}>
           <h3>{recipe.title}</h3>
-          <p>{recipe.instructions}</p>
+          <p>{recipe.instructions.slice(0, 20)}...</p>
+          <Button onClick={() => handleShow(recipe)}>More information</Button>
         </div>
       ))}
+      <Modal
+        show={show}
+        fullscreen={true}
+        onHide={() => setShow(false)}
+        animation={true}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>{recipe.title}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>{recipe.instructions}</Modal.Body>
+      </Modal>
     </div>
   );
 }

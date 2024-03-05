@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Form from "react-bootstrap/Form";
 import { Typeahead } from "react-bootstrap-typeahead";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
 
 function FilterRecipes() {
   // State variables
@@ -8,6 +10,8 @@ function FilterRecipes() {
   const [selectedIngredients, setSelectedIngredients] = useState([]); //Keeps track of the IDs of the ingredients selected by the user.
   const [ingredientFields, setIngredientFields] = useState([{ name: null }]);
   const [filteredRecipes, setFilteredRecipes] = useState([]); //Stores the list of recipes generated based on the selected ingredients.
+  const [recipe, setRecipe] = useState([]);
+  const [show, setShow] = useState(false);
 
   const handleAddField = () => {
     setIngredientFields([...ingredientFields, { name: null }]);
@@ -75,6 +79,11 @@ function FilterRecipes() {
     }
   };
 
+  function handleShow(recipe) {
+    setRecipe(recipe);
+    setShow(true);
+  }
+
   return (
     <div className="container mt-5 text-bg-dark p-3 border border-info border-3">
       <h2 className="text-info mb-3">Filter Recipes</h2>
@@ -83,7 +92,7 @@ function FilterRecipes() {
           <label className="form-label text-info">Select Ingredients:</label>
           <div>
             {ingredientFields.map((field, index) => (
-              <div className="mb-3">
+              <div className="mb-3" key={index}>
                 <Typeahead
                   id={`name-${index}`}
                   labelKey="name"
@@ -111,18 +120,34 @@ function FilterRecipes() {
       </Form>
 
       {filteredRecipes.length !== 0 && (
-        <div className="mt-3">
+        <div key={filteredRecipes.id} className="mt-3">
           <h3>Filtered Recipes</h3>
           {filteredRecipes.map((recipe) => (
-            <div key={recipe.id}>
+            <div key={recipe.id} className="card">
               <p>
-                <strong>Title:</strong> {recipe.title}
+                <strong>{recipe.title}</strong>
               </p>
               <p>
-                <strong>Instructions:</strong> {recipe.instructions}
+                <strong>Instructions:</strong>{" "}
+                {recipe.instructions.slice(0, 20)}
+                ...
               </p>
+              <Button onClick={() => handleShow(recipe)}>
+                More information
+              </Button>
             </div>
           ))}
+          <Modal
+            show={show}
+            fullscreen={true}
+            onHide={() => setShow(false)}
+            animation={true}
+          >
+            <Modal.Header closeButton>
+              <Modal.Title>{recipe.title}</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>{recipe.instructions}</Modal.Body>
+          </Modal>
         </div>
       )}
     </div>
