@@ -2,6 +2,7 @@ var express = require("express");
 var router = express.Router();
 const db = require("../model/helper");
 const models = require("../models");
+const { Op } = require("sequelize");
 const recipeIdInDatabase = require("../guards/recipeIdInDatabase");
 
 router.get("/", function (req, res, next) {
@@ -38,18 +39,15 @@ router.post("/recipes", async (req, res) => {
       where: { title: title },
       defaults: { title: title, instructions: instructions },
     });
-    console.log(recipe[0].id);
+    // console.log(recipe[0].id);
 
     for (let i = 0; i < ingredients.length; i++) {
-      const item = await models.ingredients.findOrCreate({
+      const [ingredient] = await models.ingredients.findOrCreate({
         where: { name: ingredients[i].name },
         defaults: { name: ingredients[i].name },
       });
-      console.log(item[i].id);
-      const itemId = await models.ingredients.findOne({
-        where: { name: ingredients[i].name },
-      });
-      console.log(itemId);
+      // console.log(ingredient);
+      // console.log(itemId);
       // await recipe.addIngredient(item, {
       //   through: {
       //     quantity: ingredients[i].quantity,
@@ -58,7 +56,7 @@ router.post("/recipes", async (req, res) => {
       // });
       await models.recipeIngredients.create({
         recipeId: recipe[0].id,
-        ingredientId: itemId.dataValues.id,
+        ingredientId: ingredient.id,
         quantity: ingredients[i].quantity,
         units: ingredients[i].units,
       });
@@ -81,26 +79,47 @@ router.get("/ingredients", async (req, res) => {
 
 /* 5. Generate recipe */
 router.post("/generate-recipe", async (req, res) => {
-  const ingredients = req.body.ingredients; // An array of ingredient names
-  const query = `
-  SELECT r.*
-  FROM recipes AS r
-  INNER JOIN recipeingredients ri ON r.RecipeID = ri.RecipeID
-  WHERE IngredientID IN (${ingredients.join(",")})
-  GROUP BY r.RecipeID
-  HAVING COUNT(*) <= (${ingredients.length})
-  AND COUNT(*) = (SELECT COUNT(*) FROM recipeingredients WHERE RecipeID = r.RecipeID)
-  `;
-  console.log("query", query);
   try {
-    // Execute the SQL query
-    const results = await db(query);
-    // Send the results as JSON
-    res.json({ recipes: results });
+    const { ingredients } = req.body;
+    const recipes = await models.recipes.findAll({
+      include: [
+        {
+          model: models.ingredients,
+          where: {
+            id: {
+              [Op.in]: ingredients,
+            },
+          },
+          through: {
+            model: models.recipeIngredients,
+          },
+        },
+      ],
+    });
+    res.send(recipes);
   } catch (error) {
-    console.error("Error generating recipe:", error);
-    res.status(500).json(error);
+    res.status(500).send(error);
   }
+  // const ingredients = req.body.ingredients; // An array of ingredient names
+  // const query = `
+  // SELECT r.*
+  // FROM recipes AS r
+  // INNER JOIN recipeingredients ri ON r.RecipeID = ri.RecipeID
+  // WHERE IngredientID IN (${ingredients.join(",")})
+  // GROUP BY r.RecipeID
+  // HAVING COUNT(*) <= (${ingredients.length})
+  // AND COUNT(*) = (SELECT COUNT(*) FROM recipeingredients WHERE RecipeID = r.RecipeID)
+  // `;
+  // console.log("query", query);
+  // try {
+  //   // Execute the SQL query
+  //   const results = await db(query);
+  //   // Send the results as JSON
+  //   res.json({ recipes: results });
+  // } catch (error) {
+  //   console.error("Error generating recipe:", error);
+  //   res.status(500).json(error);
+  // }
 });
 // SQL query to fetch recipes based on ingredients
 //   const query = ` SELECT r.*
