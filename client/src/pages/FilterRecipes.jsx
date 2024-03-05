@@ -22,12 +22,15 @@
 // export default GetRecipes;
 
 import React, { useState, useEffect } from "react";
+import AddIngredients from "../components/AddIngredients";
+import Form from "react-bootstrap/Form";
 
 function FilterRecipes() {
   // State variables
   const [ingredients, setIngredients] = useState([]); //Stores the list of available ingredients fetched from an API.
   const [selectedIngredients, setSelectedIngredients] = useState([]); //Keeps track of the ingredients selected by the user.
-  const [generatedRecipes, setGeneratedRecipes] = useState([]); //Stores the list of recipes generated based on the selected ingredients.
+  const [filteredRecipes, setFilteredRecipes] = useState([]); //Stores the list of recipes generated based on the selected ingredients.
+  const [validated, setValidated] = useState(false);
 
   // Effect hook to fetch ingredients data from the backend when component mounts
   useEffect(() => {
@@ -59,32 +62,41 @@ function FilterRecipes() {
   // Function to handle selection of ingredients
   //  This function is called when the user selects ingredients from the dropdown.
   // It extracts the values of the selected options and updates the selectedIngredients state accordingly.
-  const handleIngredientSelect = (e) => {
-    const selectedValues = Array.from(
-      e.target.selectedOptions,
-      (option) => option.value
-    );
-    setSelectedIngredients(selectedValues);
-  };
+  // const handleIngredientSelect = (e) => {
+  //   const selectedValues = Array.from(
+  //     e.target.selectedOptions,
+  //     (option) => option.value
+  //   );
+  //   setSelectedIngredients(selectedValues);
+  // };
 
   // Function to submit selected ingredients and generate recipe
   //  This function is called when the user clicks the "Generate Recipe" button.
   // It sends a POST request to /api/generate-recipe with the selected ingredients in the request body.
   // Upon receiving a successful response, it updates the generatedRecipes state with the generated recipes.
   const handleSubmit = async () => {
+    const form = e.currentTarget;
+    if (form.checkValidity() === false) {
+      e.stopPropagation();
+    }
+    setValidated(true);
+
     try {
       const response = await fetch("/api/generate-recipe", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+
         body: JSON.stringify({
-          ingredients: selectedIngredients,
+          ingredients: selectedIngredients.map((ingredient) =>
+            ingredient.name[0] ? ingredient.name[0] : null
+          ),
         }),
       });
       if (response.ok) {
         const data = await response.json();
-        setGeneratedRecipes(data.recipes.data); // Update state with generated recipe
+        setFilteredRecipes(data.recipes.data); // Update state with generated recipe
       } else {
         console.error("Error generating recipe");
       }
@@ -104,9 +116,15 @@ function FilterRecipes() {
       <h2 className="text-info mb-3">Filter Recipes</h2>
 
       {/* Form for selecting ingredients */}
-      <div className="mb-3">
-        <label className="form-label text-info">Select Ingredients:</label>
-        <select
+      <Form noValidate validated={validated} onSubmit={handleSubmit}>
+        <div className="mb-3">
+          <label className="form-label text-info">Select Ingredients:</label>
+          <AddIngredients
+            ingredients={ingredients}
+            inputFields={selectedIngredients}
+            setInputFields={setSelectedIngredients}
+          />
+          {/* <select
           multiple
           className="form-control"
           value={selectedIngredients}
@@ -117,19 +135,19 @@ function FilterRecipes() {
               {ingredient.name}
             </option>
           ))}
-        </select>
-      </div>
+        </select> */}
+        </div>
 
-      {/* Button to submit selected ingredients */}
-      <button className="btn btn-outline-info" onClick={handleSubmit}>
-        Filter Recipes
-      </button>
-
+        {/* Button to submit selected ingredients */}
+        <button className="btn btn-outline-info" onClick={handleSubmit}>
+          Filter Recipes
+        </button>
+      </Form>
       {/* Section to display generated recipe */}
-      {generatedRecipes.length !== 0 && (
+      {filteredRecipes.length !== 0 && (
         <div className="mt-3">
           <h3>Filtered Recipes</h3>
-          {generatedRecipes.map((recipe) => (
+          {filteredRecipes.map((recipe) => (
             <div key={recipe.RecipeID}>
               <p>
                 <strong>Title:</strong> {recipe.Name}
