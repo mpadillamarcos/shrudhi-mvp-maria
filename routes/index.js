@@ -104,7 +104,7 @@ router.post("/generate-recipe", async (req, res) => {
 
 /* Get Recipe Ingredients table */
 /* 6. GET /recipeingredients: Get all recipe ingredients */
-router.get("/recipeingredients", async (req, res) => {
+router.post("/recipeingredients", async (req, res) => {
   try {
     const { recipeId } = req.body;
     const recipe = await models.recipes.findOne({

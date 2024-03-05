@@ -3,6 +3,7 @@ import Form from "react-bootstrap/Form";
 import { Typeahead } from "react-bootstrap-typeahead";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
+import Table from "react-bootstrap/Table";
 
 function FilterRecipes() {
   // State variables
@@ -11,6 +12,7 @@ function FilterRecipes() {
   const [ingredientFields, setIngredientFields] = useState([{ name: null }]);
   const [filteredRecipes, setFilteredRecipes] = useState([]); //Stores the list of recipes generated based on the selected ingredients.
   const [recipe, setRecipe] = useState([]);
+  const [ingredientInformation, setIngredientInformation] = useState([]);
   const [show, setShow] = useState(false);
 
   const handleAddField = () => {
@@ -79,8 +81,28 @@ function FilterRecipes() {
     }
   };
 
-  function handleShow(recipe) {
+  async function handleShow(recipe) {
     setRecipe(recipe);
+    try {
+      const response = await fetch("/api/recipeingredients", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({
+          recipeId: recipe.id,
+        }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setIngredientInformation(data);
+      } else {
+        console.error("Error generating recipe");
+      }
+    } catch (error) {
+      console.error("Error generating recipe:", error);
+    }
     setShow(true);
   }
 
@@ -146,7 +168,37 @@ function FilterRecipes() {
             <Modal.Header closeButton>
               <Modal.Title>{recipe.title}</Modal.Title>
             </Modal.Header>
-            <Modal.Body>{recipe.instructions}</Modal.Body>
+            <Modal.Body>
+              <p>{recipe.instructions}</p>
+              <h5>Ingredients</h5>
+
+              <Table>
+                <thead>
+                  <tr>
+                    <th>Ingredient</th>
+                    <th>Quantity</th>
+                    <th>Units</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ingredientInformation.map((ingredient) => (
+                    <tr key={ingredient.id}>
+                      <td>{ingredient.name}</td>
+                      <td>
+                        {ingredient.recipeIngredients.quantity
+                          ? ingredient.recipeIngredients.quantity
+                          : "No available quantities"}
+                      </td>
+                      <td>
+                        {ingredient.recipeIngredients.units
+                          ? ingredient.recipeIngredients.units
+                          : "No available units"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </Modal.Body>
           </Modal>
         </div>
       )}

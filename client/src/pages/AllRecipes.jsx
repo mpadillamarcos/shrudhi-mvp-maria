@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
+import Table from "react-bootstrap/Table";
 /*
 All Recipes:
 1. Need a list of all the recipes according to the name. (GET /recipes: Get all recipes)
@@ -16,6 +17,7 @@ function AllRecipes() {
   const [recipes, setRecipes] = useState([]);
   const [recipe, setRecipe] = useState([]);
   const [show, setShow] = useState(false);
+  const [ingredientInformation, setIngredientInformation] = useState([]);
 
   useEffect(() => {
     fetchRecipes();
@@ -31,8 +33,28 @@ function AllRecipes() {
     }
   };
 
-  function handleShow(recipe) {
+  async function handleShow(recipe) {
     setRecipe(recipe);
+    try {
+      const response = await fetch("/api/recipeingredients", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({
+          recipeId: recipe.id,
+        }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setIngredientInformation(data);
+      } else {
+        console.error("Error generating recipe");
+      }
+    } catch (error) {
+      console.error("Error generating recipe:", error);
+    }
     setShow(true);
   }
 
@@ -54,7 +76,35 @@ function AllRecipes() {
         <Modal.Header closeButton>
           <Modal.Title>{recipe.title}</Modal.Title>
         </Modal.Header>
-        <Modal.Body>{recipe.instructions}</Modal.Body>
+        <Modal.Body>
+          <p>{recipe.instructions}</p>
+          <Table>
+            <thead>
+              <tr>
+                <th>Ingredient</th>
+                <th>Quantity</th>
+                <th>Units</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ingredientInformation.map((ingredient) => (
+                <tr key={ingredient.id}>
+                  <td>{ingredient.name}</td>
+                  <td>
+                    {ingredient.recipeIngredients.quantity
+                      ? ingredient.recipeIngredients.quantity
+                      : "No available quantities"}
+                  </td>
+                  <td>
+                    {ingredient.recipeIngredients.units
+                      ? ingredient.recipeIngredients.units
+                      : "No available units"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </Modal.Body>
       </Modal>
     </div>
   );
