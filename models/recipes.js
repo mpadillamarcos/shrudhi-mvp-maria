@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
   recipes.init(
     {
       title: DataTypes.STRING,
-      instructions: DataTypes.STRING,
+      instructions: DataTypes.TEXT,
     },
     {
       sequelize,
