@@ -39,21 +39,13 @@ router.post("/recipes", async (req, res) => {
       where: { title: title },
       defaults: { title: title, instructions: instructions },
     });
-    // console.log(recipe[0].id);
 
     for (let i = 0; i < ingredients.length; i++) {
       const [ingredient] = await models.ingredients.findOrCreate({
         where: { name: ingredients[i].name },
         defaults: { name: ingredients[i].name },
       });
-      // console.log(ingredient);
-      // console.log(itemId);
-      // await recipe.addIngredient(item, {
-      //   through: {
-      //     quantity: ingredients[i].quantity,
-      //     units: ingredients[i].units,
-      //   },
-      // });
+
       await models.recipeIngredients.create({
         recipeId: recipe[0].id,
         ingredientId: ingredient.id,
@@ -100,26 +92,6 @@ router.post("/generate-recipe", async (req, res) => {
   } catch (error) {
     res.status(500).send(error);
   }
-  // const ingredients = req.body.ingredients; // An array of ingredient names
-  // const query = `
-  // SELECT r.*
-  // FROM recipes AS r
-  // INNER JOIN recipeingredients ri ON r.RecipeID = ri.RecipeID
-  // WHERE IngredientID IN (${ingredients.join(",")})
-  // GROUP BY r.RecipeID
-  // HAVING COUNT(*) <= (${ingredients.length})
-  // AND COUNT(*) = (SELECT COUNT(*) FROM recipeingredients WHERE RecipeID = r.RecipeID)
-  // `;
-  // console.log("query", query);
-  // try {
-  //   // Execute the SQL query
-  //   const results = await db(query);
-  //   // Send the results as JSON
-  //   res.json({ recipes: results });
-  // } catch (error) {
-  //   console.error("Error generating recipe:", error);
-  //   res.status(500).json(error);
-  // }
 });
 // SQL query to fetch recipes based on ingredients
 //   const query = ` SELECT r.*
@@ -129,10 +101,6 @@ router.post("/generate-recipe", async (req, res) => {
 //   GROUP BY r.RecipeID
 //   HAVING COUNT(*) <= (${ingredients.length})
 // `;
-
-// SQL query to fetch recipes based on ingredients
-// the recipe needs to have some of the ingredients in our list, and none that are not in our list
-// we have to check that the recipe has all the ingredients and doesn't need more ingredients that are not in our list
 
 /* Get Recipe Ingredients table */
 /* 6. GET /recipeingredients: Get all recipe ingredients */
@@ -155,76 +123,5 @@ router.get("/recipeingredients", async (req, res) => {
 //   HAVING COUNT(*) <= 3
 // )
 // `;
-// // insert a new recipe and all the ingredients that it needs
-// routes.post("/recipes", (req, res) => {
-//   const { name, ingredients } = req.body;
 
-//   // insert the recipe into the recipes table
-//   // INSERT INTO recipes (name) VALUES ('Pizza');
-
-//   // select the ID of the last recipe that was inserted
-//   // const recipeId = SELECT LAST_INSERT_ID() as recipe_id;
-
-//   // insert all the ingredients in the recpie_ingredients table
-//   // all the ingredient might come in an array of ingredient IDs in the req.body
-
-//   // ingredients is an array of ingredient IDs_: [1,2,3,4]
-
-//   // for every ingredient, create a new row in the recipe_ingredients table
-//   for (const ingredientId of ingredients) {
-//     // INSERT INTO recipe_ingredients (recipe_id, ingredient_id) VALUES (recipeId, ingredientId);
-//   }
-// });
-// /* 3. POST /recipes: Add a new recipe*/
-// router.post("/recipes", async function(req, res, next) {
-//   try {
-//     // Extract recipe data from request body
-//     const { name, instructions } = req.body;
-
-//     // Validate incoming data
-//     if (!name || !instructions) {
-//         return res.status(400).json({ message: 'Name and instructions are required' });
-//     }
-//     // Insert the new recipe into the database
-//     const result = `INSERT INTO Recipes (Name, Instructions) VALUES ("${name}", "${instructions}");`;
-//     await db(result);
-
-//     // Send a success response
-//     res.status(201).json({ message: 'Recipe added successfully'});
-// } catch (error) {
-//     // Handle database errors
-//     console.error('Error adding recipe:', error);
-//     res.status(500).json({ message: 'Internal Server Error' });
-// }
-// });
-/* 5. POST /ingredients: Add a new ingredient */
-// router.post("/ingredients", async function(req, res, next) {
-//   try {
-//     // Extract ingredient data from request body
-//     const { name } = req.body;
-
-//     // Validate incoming data
-//     if (!name) {
-//       return res.status(400).json({ message: 'Ingredient name is required' });
-//     }
-
-//     // Check if the ingredient already exists in the database
-//     const existingIngredient = await db(`SELECT * FROM Ingredients WHERE Name = "${name}"`);
-
-//     // If the ingredient already exists, return success response without adding it again
-//     if (existingIngredient.length > 0) {
-//       return res.status(200).json({ message: 'Ingredient already exists' });
-//     }
-
-//     // If the ingredient does not exist, insert it into the database
-//     await db(`INSERT INTO Ingredients (Name) VALUES ("${name}")`);
-
-//     // Send a success response
-//     res.status(201).json({ message: 'Ingredient added successfully' });
-//   } catch (error) {
-//     // Handle database errors
-//     console.error('Error adding ingredient:', error);
-//     res.status(500).json({ message: 'Internal Server Error' });
-//   }
-// });
 module.exports = router;
