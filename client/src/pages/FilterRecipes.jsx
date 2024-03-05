@@ -102,10 +102,7 @@ function FilterRecipes() {
         },
 
         body: JSON.stringify({
-          ingredients: selectedIngredients.map(
-            (ingredient) => ingredient
-            // ingredient.id ? ingredient.id : null
-          ),
+          ingredients: selectedIngredients.map((ingredient) => ingredient),
         }),
       });
       if (response.ok) {
@@ -188,10 +185,10 @@ function FilterRecipes() {
           {filteredRecipes.map((recipe) => (
             <div key={recipe.id}>
               <p>
-                <strong>Title:</strong> {recipe.Name}
+                <strong>Title:</strong> {recipe.title}
               </p>
               <p>
-                <strong>Instructions:</strong> {recipe.Instructions}
+                <strong>Instructions:</strong> {recipe.instructions}
               </p>
             </div>
           ))}
