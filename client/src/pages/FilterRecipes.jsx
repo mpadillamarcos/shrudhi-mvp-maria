@@ -111,9 +111,9 @@ function FilterRecipes() {
     <div className="container text-center">
       <h2 className="text-success m-3">Filter Recipes</h2>
       <Form onSubmit={handleSubmit}>
-        <div>
+        <div className="container">
           <label className="form-label text-body">Select Ingredients:</label>
-          <div>
+          <div className="container col-6">
             {ingredientFields.map((field, index) => (
               <div className="mb-3" key={index}>
                 <Typeahead

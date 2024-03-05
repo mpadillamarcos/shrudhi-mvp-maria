@@ -73,7 +73,7 @@ export default function AddIngredients({
         className="btn btn-secondary"
         onClick={handleAddField}
       >
-        +
+        Add ingredient
       </button>
     </div>
   );
