@@ -63,7 +63,7 @@ function AllRecipes() {
     <div className="container">
       <div className="row">
         {recipes.map((recipe) => (
-          <div key={recipe.id} className="card m-2 col">
+          <div key={recipe.id} className="grid p-2 m-2 col border rounded">
             <h3>{recipe.title}</h3>
             <p>{recipe.instructions.slice(0, 20)}...</p>
             <div>
