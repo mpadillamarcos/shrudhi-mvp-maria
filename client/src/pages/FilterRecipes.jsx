@@ -166,12 +166,7 @@ function FilterRecipes() {
               ))}
             </div>
           </div>
-          <Modal
-            show={show}
-            fullscreen={true}
-            onHide={() => setShow(false)}
-            animation={true}
-          >
+          <Modal show={show} onHide={() => setShow(false)} animation={true}>
             <Modal.Header closeButton>
               <Modal.Title>{recipe.title}</Modal.Title>
             </Modal.Header>
